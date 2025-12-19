@@ -32,6 +32,9 @@ class TrainerProfile(models.Model):
         related_name="trainers"
     )
 
+    def __str__(self):
+        return self.user.username
+
 
 class ClientProfile(models.Model):
     user = models.OneToOneField(
@@ -39,7 +42,7 @@ class ClientProfile(models.Model):
         on_delete=models.CASCADE,
         related_name="client_profile"
     )
-    full_name = models.TextField()
+    full_name = models.CharField(max_length=63)
     phone_number = models.PositiveIntegerField()
 
     def __str__(self):
@@ -48,6 +51,9 @@ class ClientProfile(models.Model):
 
 class Specialization(models.Model):
     name = models.CharField(max_length=63, unique=True)
+
+    def __str__(self):
+        return self.name
 
 
 class Workout(models.Model):
