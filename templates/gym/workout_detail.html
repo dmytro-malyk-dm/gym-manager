@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>{{ workout.name }}</h1>
+  <h2>Workout Information</h2>
+  <ul>
+    <li>Description: {{ workout.description }}</li>
+    <li>Duration: {{ workout.duration }}</li>
+   </ul>
+  <h2>Trainers</h2>
+  {% if workout.trainer %}
+  <ul>
+  {% for trainer in workout.trainer.all %}
+    <li>
+    <a href="{% url 'gym:trainer-detail' pk=trainer.id %}">
+      {{ trainer.user.first_name }} {{ trainer.user.last_name }}
+    </a>
+    </li>
+  {% endfor %}
+  </ul>
+  {% else %}
+    <p>No trainers assigned to this workout.</p>
+  {% endif %}
+  <h2>Schedule</h2>
+  {% if workout.schedules %}
+  <ul>
+  {% for schedule in workout.schedules.all %}
+    <li>
+    <a href="{% url 'gym:schedule-list' %}">{{ schedule.id }}</a>
+    </li>
+  {% endfor %}
+  </ul>
+  {% else %}
+    <p>No schedule assigned to this workout.</p>
+  {% endif %}
+{% endblock %}
