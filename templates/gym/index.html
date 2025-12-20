@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}
+  <title>Home page</title>
+{% endblock %}
+{% block content %}
+  <h1>Gym home</h1>
+  <p>Welcome to greatest gym</p>
+  <h3>Gym content</h3>
+  <ul>
+    <li>Num trainers: {{ num_trainers }}</li>
+    <li>Num specializations: {{ num_specialization }}</li>
+    <li>Num clients: {{ num_clients }}</li>
+  </ul>
+  <p>You have visited this page {{ num_visit }} time{{ num_visit|pluralize }}.</p>
+{% endblock %}
