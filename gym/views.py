@@ -20,6 +20,7 @@ class HomeTemplateView(TemplateView):
 
 class TrainerListView(generic.ListView):
     model = TrainerProfile
+    context_object_name = "trainers"
     queryset = TrainerProfile.objects.select_related(
         "user", "specialization"
     ).order_by("user__first_name")
@@ -28,7 +29,7 @@ class TrainerListView(generic.ListView):
 
 class TrainerDetailView(generic.DetailView):
     model = TrainerProfile
-    context_object_name = "trainers"
+    context_object_name = "trainer"
     queryset = TrainerProfile.objects.select_related(
         "user", "specialization"
     ).prefetch_related("workouts")
