@@ -1,14 +1,6 @@
 <ul>
-  <li>
-    <a href="#">Home page</a>
-  </li>
-  <li>
-    <a href="#">Trainers</a>
-  </li>
-  <li>
-    <a href="#">Workouts</a>
-  </li>
-  <li>
-    <a href="#">Schedule</a>
-  </li>
+  <li><a href="{% url 'gym:index' %}">Home page</a></li>
+  <li><a href="{% url 'gym:trainer-list' %}">Trainers</a></li>
+  <li><a href="{% url 'gym:workout-list' %}">Workouts</a></li>
+  <li><a href="{% url 'gym:schedule-list' %}">Schedule</a></li>
 </ul>

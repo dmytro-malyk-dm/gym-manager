@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Schedule List</h1>
+  <table>
+  <tr>
+    <th>ID</th>
+    <th>Workout</th>
+    <th>Trainer</th>
+    <th>Start time</th>
+    <th>Capacity</th>
+  </tr>
+  {% for schedule in schedule_list %}
+    <tr>
+      <td>{{ schedule.id }}</td>
+      <td>{{ schedule.workout }}</td>
+      <td>{{ schedule.workout.trainer.user.username }}</td>
+      <td>{{ schedule.start_time }}</td>
+      <td>{{ schedule.capacity }}</td>
+    </tr>
+  {% endfor %}
+  </table>
+{% endblock %}
