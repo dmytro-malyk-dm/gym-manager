@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.utils import timezone
 from django.views import generic
 from django.views.generic import TemplateView
 
@@ -57,7 +58,38 @@ class ScheduleListView(generic.ListView):
         "workout",
         "workout__trainer",
         "workout__trainer__user"
-    )
+    ).order_by("start_time")
+
+class ScheduleDetailView(generic.DetailView):
+    model = Schedule
+    queryset = Schedule.objects.select_related(
+        "workout",
+        "workout__trainer",
+        "workout__trainer__user",
+        "workout__trainer__specialization"
+    ).prefetch_related("bookings", "bookings__client")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        schedule = self.object
+        user = self.request.user
+
+        context["is_booked"] = schedule.bookings.filter(
+            client=user
+        )
+
+        context["available_spots"] = schedule.capacity - schedule.bookings.count()
+        context["is_full"] = context["available_spots"] <= 0
+        context["can_book"] = schedule.start_time > timezone.now()
+        if user.role in ["admin", "trainer"]:
+            context["show_participants"] = True
+            context["participants"] = schedule.bookings.select_related(
+                "client"
+            )
+        return context
+
+
+
 
 
 

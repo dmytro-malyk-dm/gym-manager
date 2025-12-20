@@ -6,7 +6,7 @@ from gym.views import (
     TrainerDetailView,
     WorkoutDetailView,
     WorkoutListView,
-    ScheduleListView
+    ScheduleListView, ScheduleDetailView
 )
 
 app_name = "gym"
@@ -18,5 +18,6 @@ urlpatterns = [
     path("workouts/<int:pk>/", WorkoutDetailView.as_view(), name="workout-detail"),
     path("workouts/", WorkoutListView.as_view(), name="workout-list"),
     path("schedules/", ScheduleListView.as_view(), name="schedule-list"),
+    path("schedules/<int:pk>/", ScheduleDetailView.as_view(), name="schedule-detail"),
 
 ]

@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="schedule-detail">
+  <h1>{{ schedule.workout.name }}</h1>
+  
+  <div class="row">
+    <div class="col-md-8">
+      <h2>Class Information</h2>
+      <ul class="list-unstyled">
+        <li><strong>Trainer:</strong>
+          <a href="{% url 'gym:trainer-detail' pk=schedule.workout.trainer.id %}">
+            {{ schedule.workout.trainer.user.get_full_name }}
+          </a>
+          ({{ schedule.workout.trainer.specialization.name }})
+        </li>
+        <li><strong>Date:</strong> {{ schedule.start_time|date:"l, d F Y" }}</li>
+        <li><strong>Time:</strong> {{ schedule.start_time|date:"H:i" }}</li>
+        <li><strong>Duration:</strong> {{ schedule.workout.duration_time }} minutes</li>
+        <li><strong>Capacity:</strong> {{ schedule.capacity }} people</li>
+        <li><strong>Available spots:</strong>
+          <span class="badge {% if available_spots > 0 %}badge-success{% else %}badge-danger{% endif %}">
+            {{ available_spots }}
+          </span>
+        </li>
+      </ul>
+      
+      <h3>About this workout</h3>
+      <p>{{ schedule.workout.description }}</p>
+      
+      {% if user.role == "client" %}
+        <div class="booking-actions">
+          {% if can_book %}
+            {% if is_booked %}
+              <a href="{% url 'gym:toggle-booking' pk=schedule.id %}"
+                 class="btn btn-danger btn-lg">
+                Cancel Booking
+              </a>
+              <p class="text-success mt-2">✓ You are booked for this class</p>
+            {% elif is_full %}
+              <button class="btn btn-secondary btn-lg" disabled>
+                Class is Full
+              </button>
+            {% else %}
+              <a href="{% url 'gym:toggle-booking' pk=schedule.id %}"
+                 class="btn btn-success btn-lg">
+                Book This Class
+              </a>
+            {% endif %}
+          {% else %}
+            <button class="btn btn-secondary btn-lg" disabled>
+              Booking Closed (Class Started)
+            </button>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+    
+    <div class="col-md-4">
+      {% if show_participants %}
+        <h3>Participants ({{ participants.count }})</h3>
+        {% if participants %}
+          <ul class="list-group">
+            {% for booking in participants %}
+              <li class="list-group-item">
+                {{ booking.client.get_full_name }}
+                <small class="text-muted">
+                  ({{ booking.client.client_profile.phone_number }})
+                </small>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="text-muted">No participants yet.</p>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+  
+  <div class="mt-4">
+    <a href="{% url 'gym:schedule-list' %}" class="btn btn-secondary">
+      ← Back to Schedule
+    </a>
+  </div>
+</div>
+{% endblock %}
