@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>{{ trainerprofile.user.username }}</h1>
+  <ul>
+    <li>First name: {{ trainerprofile.user.first_name }}</li>
+    <li>Last name: {{ trainerprofile.user.last_name }}</li>
+    <li>Specialization: {{ trainerprofile.specialization }}</li>
+  </ul>
+  <h2>Workouts</h2>
+  {% if trainerprofile.workouts.all %}
+    <ul>
+      {% for workout in trainerprofile.workouts.all %}
+      <li>
+        <a href="{% url 'gym:workout-detail' pk=workout.id %}">
+          {{ workout.name }} ({{ workout.description }})
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>This trainer has no workout assigned.</p>
+  {% endif %}
+{% endblock %}
