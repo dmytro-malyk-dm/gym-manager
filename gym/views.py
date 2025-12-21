@@ -1,9 +1,11 @@
-from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.views import generic
 from django.views.generic import TemplateView
+from pyexpat.errors import messages
 
-from gym.models import TrainerProfile, Specialization, ClientProfile, Workout, Schedule
+from gym.models import TrainerProfile, Specialization, ClientProfile, Workout, Schedule, Booking
 
 
 class HomeTemplateView(TemplateView):
@@ -88,9 +90,54 @@ class ScheduleDetailView(generic.DetailView):
             )
         return context
 
+@login_required
+def toggle_booking(request, pk):
+    schedule = get_object_or_404(Schedule, pk=pk)
+    user = request.user
 
+    if user.role != "client":
+        messages.error(request, "Only clients can book classes.")
+        return redirect("gym:schedule-detail", pk=pk)
+    if schedule.start_time <= timezone.now():
+        messages.error(request, "Cannot book past classes.")
+        return redirect("gym:schedule-detail", pk=pk)
 
+    booking = Booking.objects.filter(
+        client=user,
+        schedule=schedule
+    ).first()
 
+    if booking:
+        booking.delete()
+        messages.success(
+            request,
+            f"Booking cancelled for {schedule.workout.name}"
+        )
+    else:
+        if schedule.bookings.count() >= schedule.capacity:
+            messages.error(request, "This class is full.")
+            return redirect("gym:schedule-detail", pk=pk)
+        conflicting = Booking.objects.filter(
+            client=user,
+            schedule__start_time=schedule.start_time
+        ).exists()
+
+        if conflicting:
+            messages.error(
+                request,
+                "You already have a class at this time."
+            )
+            return redirect("gym:schedule-detail", pk=pk)
+        Booking.objects.create(
+            client=user,
+            schedule=schedule
+        )
+        messages.success(
+            request,
+            f"Successfully booked {schedule.workout.name}!"
+        )
+
+    return redirect("gym:schedule-detail", pk=pk)
 
 
 
