@@ -28,6 +28,6 @@
     </li>
   {% else %}
     <li class="list-group-item"><a href="{% url 'login' %}">🔑 Login</a></li>
-    <li><a href="#">📝 Register</a></li>
+    <li><a href="{% url 'gym:register' %}">📝 Register</a></li>
   {% endif %}
 </ul>
