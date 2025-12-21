@@ -42,11 +42,10 @@ class ClientProfile(models.Model):
         on_delete=models.CASCADE,
         related_name="client_profile"
     )
-    full_name = models.CharField(max_length=63)
     phone_number = models.PositiveIntegerField()
 
     def __str__(self):
-        return f"{self.full_name} ({self.phone_number})"
+        return f"{self.user.get_full_name()} ({self.phone_number})"
 
 
 class Specialization(models.Model):

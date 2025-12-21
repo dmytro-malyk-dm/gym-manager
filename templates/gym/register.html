@@ -87,18 +87,6 @@
           <div class="row">
             <div class="col-md-6">
               <div class="form-group">
-                <label for="{{ form.full_name.id_for_label }}">
-                  Full Name:
-                  <small class="text-muted">(for booking records)</small>
-                </label>
-                {{ form.full_name }}
-                {% if form.full_name.errors %}
-                  <div class="text-danger">{{ form.full_name.errors }}</div>
-                {% endif %}
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
                 <label for="{{ form.phone_number.id_for_label }}">Phone Number:</label>
                 {{ form.phone_number }}
                 {% if form.phone_number.errors %}

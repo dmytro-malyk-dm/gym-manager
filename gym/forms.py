@@ -1,3 +1,4 @@
+import re
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
@@ -10,32 +11,45 @@ User = get_user_model()
 class ClientRegistrationForm(UserCreationForm):
     """Form for client registration"""
 
-    full_name = forms.CharField(
-        max_length=63,
-        widget=forms.TextInput(attrs={"class": "form-control"}),
-        help_text="Full name for booking records"
-    )
     phone_number = forms.CharField(
-        max_length=15,
-        widget=forms.TextInput(attrs={"class": "form-control"})
+        max_length=13,
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+                "placeholder": "+380XXXXXXXXX",
+                "value": "+380",
+            }
+        ),
+        help_text="Phone number must start with +380 and contain 9 digits",
     )
 
-    class Meta:
+    class Meta(UserCreationForm.Meta):
         model = User
-        fields = [
+        fields = (
             "username",
             "email",
             "first_name",
             "last_name",
             "password1",
             "password2",
-        ]
+        )
         widgets = {
             "username": forms.TextInput(attrs={"class": "form-control"}),
             "email": forms.EmailInput(attrs={"class": "form-control"}),
             "first_name": forms.TextInput(attrs={"class": "form-control"}),
             "last_name": forms.TextInput(attrs={"class": "form-control"}),
         }
+
+    def clean_phone_number(self):
+        phone = self.cleaned_data["phone_number"]
+
+        pattern = r"^\+380\d{9}$"
+        if not re.match(pattern, phone):
+            raise forms.ValidationError(
+                "Phone number must start with +380 and contain exactly 9 digits"
+            )
+
+        return phone
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -51,7 +65,6 @@ class ClientRegistrationForm(UserCreationForm):
 
             ClientProfile.objects.create(
                 user=user,
-                full_name=self.cleaned_data["full_name"],
                 phone_number=self.cleaned_data["phone_number"]
             )
 

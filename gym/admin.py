@@ -39,10 +39,10 @@ class TrainerProfileAdmin(admin.ModelAdmin):
 
 @admin.register(ClientProfile)
 class ClientProfileAdmin(admin.ModelAdmin):
-    list_display = ("user", "full_name", "phone_number",)
-    list_filter = ("full_name", "phone_number",)
+    list_display = ("user", "phone_number",)
+    list_filter = ("phone_number",)
     fieldsets = (
-        (None, {"fields": ("user", "full_name", "phone_number")}),
+        (None, {"fields": ("user", "phone_number")}),
     )
 
 admin.site.register(Specialization)
