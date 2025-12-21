@@ -1,12 +1,13 @@
 from django.contrib.auth import login
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import generic, View
 from django.views.generic import TemplateView
 from django.contrib import messages
 
-from gym.forms import ClientRegistrationForm
+from gym.forms import ClientRegistrationForm, ScheduleSearchForm, ScheduleForm
 from gym.models import (
     TrainerProfile,
     Specialization,
@@ -64,13 +65,58 @@ class WorkoutDetailView(LoginRequiredMixin, generic.DetailView):
     ).prefetch_related("schedules")
 
 
+class TrainerOrAdminMixin(UserPassesTestMixin):
+    """Mixin to restrict access to trainers and admins only"""
+
+    def test_func(self):
+        return self.request.user.role in ["trainer", "admin"]
+
+    def handle_no_permission(self):
+        messages.error(
+            self.request,
+            "Only trainers and admins can access this page."
+        )
+        return redirect("gym:schedule-list")
+
+
 class ScheduleListView(LoginRequiredMixin, generic.ListView):
     model = Schedule
-    queryset = Schedule.objects.select_related(
-        "workout",
-        "workout__trainer",
-        "workout__trainer__user"
-    ).order_by("start_time")
+    paginate_by = 20
+
+    def get_queryset(self):
+        queryset = Schedule.objects.filter(
+            start_time__gte=timezone.now()
+        ).select_related(
+            "workout",
+            "workout__trainer",
+            "workout__trainer__user"
+        ).order_by("start_time")
+
+        form = ScheduleSearchForm(self.request.GET)
+        if form.is_valid():
+            date = form.cleaned_data.get("date")
+            workout_name = form.cleaned_data.get("workout_name")
+
+            if date:
+                queryset = queryset.filter(start_time__date=date)
+
+            if workout_name:
+                queryset = queryset.filter(
+                    workout__name__icontains=workout_name
+                )
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["search_form"] = ScheduleSearchForm(
+            initial={
+                "date": self.request.GET.get("date", ""),
+                "workout_name": self.request.GET.get("workout_name", ""),
+            }
+        )
+        context["can_manage"] = self.request.user.role in ["trainer", "admin"]
+        return context
 
 
 class ScheduleDetailView(LoginRequiredMixin, generic.DetailView):
@@ -89,19 +135,107 @@ class ScheduleDetailView(LoginRequiredMixin, generic.DetailView):
 
         context["is_booked"] = schedule.bookings.filter(
             client=user
-        )
+        ).exists()
 
         context["available_spots"] = (
                 schedule.capacity - schedule.bookings.count()
         )
         context["is_full"] = context["available_spots"] <= 0
-        context["can_book"] = schedule.start_time > timezone.now()
+        context["can_book"] = (
+                schedule.start_time > timezone.now() and
+                user.role == "client"
+        )
         if user.role in ["admin", "trainer"]:
             context["show_participants"] = True
             context["participants"] = schedule.bookings.select_related(
                 "client"
             )
+            context["can_manage"] = True
+
         return context
+
+
+class ScheduleCreateView(
+    LoginRequiredMixin,
+    TrainerOrAdminMixin,
+    generic.CreateView
+):
+    """Create new schedule (trainers and admins only)"""
+    model = Schedule
+    form_class = ScheduleForm
+    template_name = "gym/schedule_form.html"
+    success_url = reverse_lazy("gym:schedule-list")
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        messages.success(
+            self.request,
+            f"Schedule for {form.instance.workout.name} created successfully!"
+        )
+        return super().form_valid(form)
+
+
+class ScheduleUpdateView(
+    LoginRequiredMixin,
+    TrainerOrAdminMixin,
+    generic.UpdateView
+):
+    """Update schedule (trainers and admins only)"""
+    model = Schedule
+    form_class = ScheduleForm
+    template_name = "gym/schedule_form.html"
+    success_url = reverse_lazy("gym:schedule-list")
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
+
+    def test_func(self):
+        if not super().test_func():
+            return False
+
+        if self.request.user.role == "trainer":
+            schedule = self.get_object()
+            return schedule.workout.trainer.user == self.request.user
+
+        return True
+
+    def form_valid(self, form):
+        messages.success(
+            self.request,
+            "Schedule updated successfully!"
+        )
+        return super().form_valid(form)
+
+
+class ScheduleDeleteView(
+    LoginRequiredMixin,
+    TrainerOrAdminMixin,
+    generic.DeleteView
+):
+    """Delete schedule (trainers and admins only)"""
+    model = Schedule
+    template_name = "gym/schedule_confirm_delete.html"
+    success_url = reverse_lazy("gym:schedule-list")
+
+    def test_func(self):
+        if not super().test_func():
+            return False
+
+        if self.request.user.role == "trainer":
+            schedule = self.get_object()
+            return schedule.workout.trainer.user == self.request.user
+
+        return True
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(request, "Schedule deleted successfully!")
+        return super().delete(request, *args, **kwargs)
 
 
 class BookingCreateView(LoginRequiredMixin, View):
