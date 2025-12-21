@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header bg-danger text-white">
+        <h2>Delete Schedule</h2>
+      </div>
+      <div class="card-body">
+        <p class="lead">
+          Are you sure you want to delete this schedule?
+        </p>
+
+        <div class="alert alert-warning">
+          <strong>Warning:</strong> This will also cancel all bookings for this class!
+        </div>
+
+        <ul>
+          <li><strong>Workout:</strong> {{ schedule.workout.name }}</li>
+          <li><strong>Date:</strong> {{ schedule.start_time|date:"d M Y, H:i" }}</li>
+          <li><strong>Bookings:</strong> {{ schedule.bookings.count }}</li>
+        </ul>
+
+        <form method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">
+            Yes, Delete
+          </button>
+          <a href="{% url 'gym:schedule-detail' pk=schedule.id %}" class="btn btn-secondary">
+            Cancel
+          </a>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -13,9 +13,6 @@
     {% if user.role == "client" %}
       <li><a href="{% url 'gym:my-bookings' %}">📝 My Bookings</a></li>
     {% endif %}
-    {% if user.role in "admin,trainer" %}
-      <li><a href="#">➕ Add Schedule</a></li>
-    {% endif %}
     <hr>
     <li class="list-group-item">
       <form action="{% url 'logout' %}" method="post">
