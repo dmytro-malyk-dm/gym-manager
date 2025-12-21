@@ -11,7 +11,7 @@
     <li><a href="{% url 'gym:workout-list' %}">Workouts</a></li>
     <li><a href="{% url 'gym:schedule-list' %}">Schedule</a></li>
     {% if user.role == "client" %}
-      <li><a href="#">📝 My Bookings</a></li>
+      <li><a href="{% url 'gym:my-bookings' %}">📝 My Bookings</a></li>
     {% endif %}
     {% if user.role in "admin,trainer" %}
       <li><a href="#">➕ Add Schedule</a></li>

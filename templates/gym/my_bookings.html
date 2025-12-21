@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>My Bookings</h1>
+
+{% if booking_list %}
+<table class="table">
+  <thead>
+    <tr>
+      <th>Workout</th>
+      <th>Trainer</th>
+      <th>Date & Time</th>
+      <th>Status</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for booking in booking_list %}
+    <tr>
+      <td>{{ booking.schedule.workout.name }}</td>
+      <td>{{ booking.schedule.workout.trainer.user.get_full_name }}</td>
+      <td>{{ booking.schedule.start_time|date:"d M Y, H:i" }}</td>
+      <td>
+        {% if booking.schedule.start_time > now %}
+          <span class="badge badge-success">Upcoming</span>
+        {% else %}
+          <span class="badge badge-secondary">Completed</span>
+        {% endif %}
+      </td>
+      <td>
+        {% if booking.schedule.start_time > now %}
+          <form method="post" action="{% url 'gym:schedule-cancel' pk=booking.schedule.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-danger">
+              Cancel
+            </button>
+          </form>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>You have no bookings yet.</p>
+<a href="{% url 'gym:schedule-list' %}" class="btn btn-primary">
+  Browse Schedule
+</a>
+{% endif %}
+{% endblock %}

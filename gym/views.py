@@ -165,3 +165,22 @@ class ClientRegistrationView(generic.CreateView):
         user = form.save()
         login(self.request, user)
         return redirect(self.success_url)
+
+
+class MyBookingView(LoginRequiredMixin, generic.ListView):
+    model = Booking
+    template_name = "gym/my_bookings.html"
+
+    def get_queryset(self):
+        return Booking.objects.filter(
+            client=self.request.user
+        ).select_related(
+            "schedule",
+            "schedule__workout",
+            "schedule__workout__trainer__user"
+        ).order_by("-schedule__start_time")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["now"] = timezone.now()
+        return context

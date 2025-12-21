@@ -6,7 +6,7 @@ from gym.views import (
     TrainerDetailView,
     WorkoutDetailView,
     WorkoutListView,
-    ScheduleListView, ScheduleDetailView, ClientRegistrationView, BookingCreateView, BookingCancelView
+    ScheduleListView, ScheduleDetailView, ClientRegistrationView, BookingCreateView, BookingCancelView, MyBookingView
 )
 
 app_name = "gym"
@@ -22,5 +22,6 @@ urlpatterns = [
     path("register/", ClientRegistrationView.as_view(), name="register"),
     path("schedule/<int:pk>/book/", BookingCreateView.as_view(), name="schedule-book"),
     path("schedule/<int:pk>/cancel/", BookingCancelView.as_view(), name="schedule-cancel"),
+    path("bookings/", MyBookingView.as_view(), name="my-bookings")
 
 ]
