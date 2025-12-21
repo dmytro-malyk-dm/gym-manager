@@ -1,6 +1,33 @@
-<ul>
+<ul class="sidebar-nav">
   <li><a href="{% url 'gym:index' %}">Home page</a></li>
-  <li><a href="{% url 'gym:trainer-list' %}">Trainers</a></li>
-  <li><a href="{% url 'gym:workout-list' %}">Workouts</a></li>
-  <li><a href="{% url 'gym:schedule-list' %}">Schedule</a></li>
+  {% if user.is_authenticated %}
+    <li class="user-info">
+      <strong>{{ user.get_full_name|default:user.username }}</strong>
+      <br>
+      <small class="text-muted">{{ user.get_role_display }}</small>
+    </li>
+    <hr>
+    <li><a href="{% url 'gym:trainer-list' %}">Trainers</a></li>
+    <li><a href="{% url 'gym:workout-list' %}">Workouts</a></li>
+    <li><a href="{% url 'gym:schedule-list' %}">Schedule</a></li>
+    {% if user.role == "client" %}
+      <li><a href="#">📝 My Bookings</a></li>
+    {% endif %}
+    {% if user.role in "admin,trainer" %}
+      <li><a href="#">➕ Add Schedule</a></li>
+    {% endif %}
+    <hr>
+    <li class="list-group-item">
+      <form action="{% url 'logout' %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-link" style="padding: 0; color: rgba(0,0,0,.5);">
+          Logout
+        </button>
+        <br>
+      </form>
+    </li>
+  {% else %}
+    <li class="list-group-item"><a href="{% url 'login' %}">🔑 Login</a></li>
+    <li><a href="#">📝 Register</a></li>
+  {% endif %}
 </ul>
