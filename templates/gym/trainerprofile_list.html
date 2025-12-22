@@ -9,19 +9,50 @@
   </div>
 </div>
 
-<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="trainers-container">
-  {% include 'gym/partials/trainer_cards.html' %}
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4">
+  {% for trainer in trainers %}
+  <div class="col">
+    <div class="card card-hover h-100 shadow-sm">
+      <div class="card-body text-center">
+        <div class="trainer-avatar mx-auto mb-3">
+          {{ trainer.user.first_name|first|upper }}{{ trainer.user.last_name|first|upper }}
+        </div>
+        <h5 class="card-title mb-1">
+          {{ trainer.user.get_full_name|default:trainer.user.username }}
+        </h5>
+        <p class="text-muted small mb-3">
+          <i class="fas fa-award text-warning me-1"></i>
+          {{ trainer.specialization.name|default:"General Fitness" }}
+        </p>
+
+        {% if trainer.bio %}
+        <p class="card-text text-sm mb-3">
+          {{ trainer.bio|truncatewords:15 }}
+        </p>
+        {% endif %}
+
+        <div class="mb-3">
+          <span class="badge bg-gradient-primary">
+            {{ trainer.workouts.count }} Workout{{ trainer.workouts.count|pluralize }}
+          </span>
+        </div>
+
+        <a href="{% url 'gym:trainer-detail' pk=trainer.id %}"
+           class="btn btn-primary btn-sm w-100">
+          <i class="fas fa-user me-2"></i>View Profile
+        </a>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12">
+    <div class="alert alert-info text-center">
+      <i class="fas fa-info-circle me-2"></i>No trainers found.
+    </div>
+  </div>
+  {% endfor %}
 </div>
 
-{% if page_obj.has_next %}
-<div class="text-center my-4"
-     hx-get="?page={{ page_obj.next_page_number }}"
-     hx-trigger="revealed"
-     hx-swap="outerHTML"
-     hx-target="this">
-  <div class="spinner-border text-primary" role="status">
-    <span class="visually-hidden">Loading...</span>
-  </div>
-</div>
-{% endif %}
+<!-- Pagination -->
+{% include "includes/pagination.html" %}
 {% endblock %}

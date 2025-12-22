@@ -40,7 +40,7 @@
               </div>
               <div>
                 <small class="text-muted d-block">Classes Available</small>
-                <h6 class="mb-0">{{ workout.schedules.count }} scheduled</h6>
+                <h6 class="mb-0">{{ upcoming_schedules|length }} scheduled</h6>
               </div>
             </div>
           </div>
@@ -95,7 +95,7 @@
         </h5>
       </div>
       <div class="card-body">
-        {% if workout.schedules.exists %}
+        {% if upcoming_schedules %}
           <div class="table-responsive">
             <table class="table align-items-center mb-0">
               <thead>
@@ -116,7 +116,7 @@
                 </tr>
               </thead>
               <tbody>
-                {% for schedule in workout.schedules.all %}
+                {% for schedule in upcoming_schedules %}
                 <tr>
                   <td>
                     <div class="d-flex px-2 py-1">
@@ -144,6 +144,12 @@
                        class="btn btn-sm btn-primary">
                       View Details
                     </a>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="5" class="text-center">
+                    <p class="text-muted mb-0">No upcoming classes scheduled</p>
                   </td>
                 </tr>
                 {% endfor %}
