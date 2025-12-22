@@ -1,53 +1,169 @@
 {% extends "base.html" %}
+{% load gym_extras %}
+{% block page_title %}Workout Details{% endblock %}
 
 {% block content %}
-<h1>{{ workout.name }}</h1>
+<div class="row">
+  <!-- Workout Info -->
+  <div class="col-lg-8 mb-4">
+    <div class="card shadow-sm">
+      <div class="workout-card-img" style="height: 300px;">
+        <div class="d-flex align-items-center justify-content-center h-100">
+          <div class="text-center text-white">
+            <i class="fas fa-dumbbell fa-5x mb-3 opacity-75"></i>
+            <h2 class="mb-0">{{ workout.name }}</h2>
+          </div>
+        </div>
+      </div>
 
-<h2>Workout Information</h2>
-<ul>
-  <li><strong>Description:</strong> {{ workout.description }}</li>
-  <li><strong>Duration:</strong> {{ workout.duration_time }} minutes</li>
-</ul>
+      <div class="card-body">
+        <h4 class="mb-3">About This Workout</h4>
+        <p class="text-muted">{{ workout.description }}</p>
 
-<h2>Trainer</h2>
-{% if workout.trainer %}
-<p>
-  <a href="{% url 'gym:trainer-detail' pk=workout.trainer.id %}">
-    {{ workout.trainer.user.get_full_name }}
+        <div class="row mt-4">
+          <div class="col-md-6 mb-3">
+            <div class="d-flex align-items-center">
+              <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md me-3">
+                <i class="fas fa-clock text-lg opacity-10"></i>
+              </div>
+              <div>
+                <small class="text-muted d-block">Duration</small>
+                <h6 class="mb-0">{{ workout.duration_time }} minutes</h6>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <div class="d-flex align-items-center">
+              <div class="icon icon-shape bg-gradient-success shadow text-center border-radius-md me-3">
+                <i class="fas fa-calendar text-lg opacity-10"></i>
+              </div>
+              <div>
+                <small class="text-muted d-block">Classes Available</small>
+                <h6 class="mb-0">{{ workout.schedules.count }} scheduled</h6>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trainer Info -->
+  <div class="col-lg-4 mb-4">
+    <div class="card shadow-sm">
+      <div class="card-header bg-gradient-info">
+        <h5 class="text-white mb-0">
+          <i class="fas fa-user-tie me-2"></i>Your Trainer
+        </h5>
+      </div>
+      <div class="card-body">
+        {% if workout.trainer %}
+          <div class="text-center mb-3">
+            <div class="trainer-avatar mx-auto mb-3">
+              {{ workout.trainer.user.first_name|first|upper }}{{ workout.trainer.user.last_name|first|upper }}
+            </div>
+            <h6 class="mb-1">
+              <a href="{% url 'gym:trainer-detail' pk=workout.trainer.id %}" class="text-dark">
+                {{ workout.trainer.user.get_full_name }}
+              </a>
+            </h6>
+            <p class="text-muted small mb-3">
+              <i class="fas fa-award text-warning me-1"></i>
+              {{ workout.trainer.specialization.name|default:"General Fitness" }}
+            </p>
+            <a href="{% url 'gym:trainer-detail' pk=workout.trainer.id %}"
+               class="btn btn-sm btn-outline-primary w-100">
+              View Full Profile
+            </a>
+          </div>
+        {% else %}
+          <p class="text-muted text-center">No trainer assigned</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Schedule -->
+<div class="row">
+  <div class="col-12">
+    <div class="card shadow-sm">
+      <div class="card-header bg-gradient-success">
+        <h5 class="text-white mb-0">
+          <i class="fas fa-calendar-alt me-2"></i>Upcoming Classes
+        </h5>
+      </div>
+      <div class="card-body">
+        {% if workout.schedules.exists %}
+          <div class="table-responsive">
+            <table class="table align-items-center mb-0">
+              <thead>
+                <tr>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                    Date & Time
+                  </th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                    Capacity
+                  </th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                    Booked
+                  </th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                    Available
+                  </th>
+                  <th class="text-secondary opacity-7"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for schedule in workout.schedules.all %}
+                <tr>
+                  <td>
+                    <div class="d-flex px-2 py-1">
+                      <div class="d-flex flex-column justify-content-center">
+                        <h6 class="mb-0 text-sm">{{ schedule.start_time|date:"d M Y" }}</h6>
+                        <p class="text-xs text-secondary mb-0">{{ schedule.start_time|date:"H:i" }}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="text-sm font-weight-bold">{{ schedule.capacity }}</span>
+                  </td>
+                  <td>
+                    <span class="text-sm font-weight-bold">{{ schedule.bookings.count }}</span>
+                  </td>
+                  <td>
+                    {% with spots=schedule.capacity|subtract:schedule.bookings.count %}
+                    <span class="badge badge-sm {% if spots > 0 %}bg-gradient-success{% else %}bg-gradient-danger{% endif %}">
+                      {{ spots }}
+                    </span>
+                    {% endwith %}
+                  </td>
+                  <td class="align-middle">
+                    <a href="{% url 'gym:schedule-detail' pk=schedule.id %}"
+                       class="btn btn-sm btn-primary">
+                      View Details
+                    </a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="alert alert-info text-center mb-0">
+            <i class="fas fa-info-circle me-2"></i>
+            No classes scheduled for this workout yet.
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mt-3">
+  <a href="{% url 'gym:workout-list' %}" class="btn btn-secondary">
+    <i class="fas fa-arrow-left me-2"></i>Back to Workouts
   </a>
-</p>
-<p><strong>Specialization:</strong> {{ workout.trainer.specialization.name|default:"N/A" }}</p>
-{% else %}
-<p>No trainer assigned to this workout.</p>
-{% endif %}
-
-<h2>Schedule</h2>
-{% if workout.schedules.exists %}
-<table class="table">
-  <thead>
-    <tr>
-      <th>Date & Time</th>
-      <th>Capacity</th>
-      <th>Booked</th>
-      <th>Available</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for schedule in workout.schedules.all %}
-    <tr>
-      <td>
-        <a href="{% url 'gym:schedule-detail' pk=schedule.id %}">
-          {{ schedule.start_time|date:"d M Y, H:i" }}
-        </a>
-      </td>
-      <td>{{ schedule.capacity }}</td>
-      <td>{{ schedule.bookings.count }}</td>
-      <td>{{ schedule.capacity|add:"-"|add:schedule.bookings.count }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-{% else %}
-<p>No schedule assigned to this workout.</p>
-{% endif %}
+</div>
 {% endblock %}

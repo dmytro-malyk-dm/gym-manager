@@ -1,18 +1,15 @@
 {% extends "base.html" %}
+{% block page_title %}Workouts{% endblock %}
+
 {% block content %}
-  <h1>Workout List</h1>
-  <table>
-  <tr>
-    <th>ID</th>
-    <th>Name</th>
-    <th>Description</th>
-  </tr>
-  {% for workout in workout_list %}
-    <tr>
-      <td><a href="{% url 'gym:workout-detail' pk=workout.id %}">{{ workout.id }}</a></td>
-      <td>{{ workout.name }}</td>
-      <td>{{ workout.description }}</td>
-    </tr>
-  {% endfor %}
-  </table>
+<div class="row mb-4">
+  <div class="col-12">
+    <h1 class="mb-0">Workout Programs</h1>
+    <p class="text-muted">Discover our diverse range of fitness classes</p>
+  </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="workouts-container">
+  {% include 'gym/partials/workout_cards.html' %}
+</div>
 {% endblock %}
