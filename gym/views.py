@@ -40,11 +40,6 @@ class TrainerListView(LoginRequiredMixin, generic.ListView):
     ).order_by("user__first_name")
     paginate_by = 9
 
-    def get_template_names(self):
-        if self.request.headers.get('HX-Request'):
-            return ['gym/partials/trainer_cards.html']
-        return ['gym/trainerprofile_list.html']
-
 
 class TrainerDetailView(LoginRequiredMixin, generic.DetailView):
     model = TrainerProfile
@@ -62,17 +57,20 @@ class WorkoutListView(LoginRequiredMixin, generic.ListView):
     ).order_by("name")
     paginate_by = 9
 
-    def get_template_names(self):
-        if self.request.headers.get('HX-Request'):
-            return ['gym/partials/workout_cards.html']
-        return ['gym/workout_list.html']
 
 
 class WorkoutDetailView(LoginRequiredMixin, generic.DetailView):
     model = Workout
     queryset = Workout.objects.select_related(
-        "trainer", "trainer__user"
-    ).prefetch_related("schedules")
+        "trainer", "trainer__user", "trainer__specialization"
+    ).prefetch_related("schedules", "schedules__bookings")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["upcoming_schedules"] = self.object.schedules.filter(
+            start_time__gte=timezone.now()
+        ).order_by("start_time")
+        return context
 
 
 class TrainerOrAdminMixin(UserPassesTestMixin):
@@ -117,10 +115,6 @@ class ScheduleListView(LoginRequiredMixin, generic.ListView):
 
         return queryset
 
-    def get_template_names(self):
-        if self.request.headers.get('HX-Request'):
-            return ['gym/partials/schedule_cards.html']
-        return ['gym/schedule_list.html']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
