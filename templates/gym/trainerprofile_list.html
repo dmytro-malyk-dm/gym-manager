@@ -1,27 +1,27 @@
 {% extends "base.html" %}
-{% block content %}
-  <h1>Trainer List</h1>
-  <table>
-    <tr>
-      <th>ID</th>
-      <th>Username</th>
-      <th>First Name</th>
-      <th>Last Name</th>
-      <th>Specialization</th>
+{% block page_title %}Trainers{% endblock %}
 
-    </tr>
-    {% for trainer in trainers %}
-      <tr>
-        <td><a href="{% url 'gym:trainer-detail' pk=trainer.id %}">{{ trainer.id }}</a></td>
-        <td>{{ trainer.user.username }}</td>
-        <td>{{ trainer.user.first_name }}</td>
-        <td>{{ trainer.user.last_name }}</td>
-        <td>{{ trainer.specialization }}</td>
-      </tr>
-    {% empty %}
-      <tr>
-        <td colspan="3">No trainers found.</td>
-      </tr>
-    {% endfor %}
-  </table>
+{% block content %}
+<div class="row mb-4">
+  <div class="col-12">
+    <h1 class="mb-0">Our Expert Trainers</h1>
+    <p class="text-muted">Meet our certified fitness professionals</p>
+  </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="trainers-container">
+  {% include 'gym/partials/trainer_cards.html' %}
+</div>
+
+{% if page_obj.has_next %}
+<div class="text-center my-4"
+     hx-get="?page={{ page_obj.next_page_number }}"
+     hx-trigger="revealed"
+     hx-swap="outerHTML"
+     hx-target="this">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+{% endif %}
 {% endblock %}
