@@ -4,7 +4,7 @@ from .base import *
 # SECURITY WARNING: don"t run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["https://gym-manager-46rj.onrender.com"]
+ALLOWED_HOSTS = ["gym-manager-46rj.onrender.com"]
 
 RENDER_EXTERNAL_HOSTNAME = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
 if RENDER_EXTERNAL_HOSTNAME:

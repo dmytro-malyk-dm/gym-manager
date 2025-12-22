@@ -95,7 +95,7 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
-STATIC_ROOT = "staticfiles"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
 
