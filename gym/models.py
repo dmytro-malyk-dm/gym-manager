@@ -43,7 +43,7 @@ class ClientProfile(models.Model):
         on_delete=models.CASCADE,
         related_name="client_profile"
     )
-    phone_number = models.PositiveIntegerField()
+    phone_number = models.CharField(max_length=20)
 
     def __str__(self):
         return f"{self.user.get_full_name()} ({self.phone_number})"
