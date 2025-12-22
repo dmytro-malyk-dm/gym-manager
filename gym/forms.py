@@ -47,7 +47,8 @@ class ClientRegistrationForm(UserCreationForm):
         pattern = r"^\+380\d{9}$"
         if not re.match(pattern, phone):
             raise forms.ValidationError(
-                "Phone number must start with +380 and contain exactly 9 digits"
+                "Phone number must start with +380 "
+                "and contain exactly 9 digits"
             )
 
         return phone
@@ -79,31 +80,31 @@ class ScheduleForm(forms.ModelForm):
         model = Schedule
         fields = ["workout", "start_time", "capacity"]
         widgets = {
-            'workout': forms.Select(attrs={'class': 'form-control'}),
-            'start_time': forms.DateTimeInput(
+            "workout": forms.Select(attrs={"class": "form-control"}),
+            "start_time": forms.DateTimeInput(
                 attrs={
-                    'class': 'form-control',
-                    'type': 'datetime-local'
+                    "class": "form-control",
+                    "type": "datetime-local"
                 },
-                format='%Y-%m-%dT%H:%M'
+                format="%Y-%m-%dT%H:%M"
             ),
-            'capacity': forms.NumberInput(attrs={'class': 'form-control'}),
+            "capacity": forms.NumberInput(attrs={"class": "form-control"}),
         }
 
     def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user', None)
+        self.user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
 
         if self.user:
             if self.user.role == "trainer":
-                self.fields['workout'].queryset = Workout.objects.filter(
+                self.fields["workout"].queryset = Workout.objects.filter(
                     trainer__user=self.user
                 )
             elif self.user.role == "admin":
-                self.fields['workout'].queryset = Workout.objects.all()
+                self.fields["workout"].queryset = Workout.objects.all()
 
     def clean_start_time(self):
-        start_time = self.cleaned_data.get('start_time')
+        start_time = self.cleaned_data.get("start_time")
 
         if start_time and start_time < timezone.now():
             raise forms.ValidationError(
@@ -112,15 +113,16 @@ class ScheduleForm(forms.ModelForm):
 
         return start_time
 
+
 class ScheduleSearchForm(forms.Form):
     """Form for searching schedule"""
     date = forms.DateField(
         required=False,
         widget=forms.DateInput(
             attrs={
-                'type': 'date',
-                'class': 'form-control',
-                'placeholder': 'Select date'
+                "type": "date",
+                "class": "form-control",
+                "placeholder": "Select date"
             }
         )
     )
@@ -129,8 +131,8 @@ class ScheduleSearchForm(forms.Form):
         required=False,
         widget=forms.TextInput(
             attrs={
-                'class': 'form-control',
-                'placeholder': 'Search by workout name...'
+                "class": "form-control",
+                "placeholder": "Search by workout name..."
             }
         )
     )

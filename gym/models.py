@@ -3,6 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+
 class User(AbstractUser):
     class Role(models.TextChoices):
         CLIENT = "client", _("Client")
@@ -81,6 +82,7 @@ class Schedule(models.Model):
 
     def __str__(self):
         return f"{self.workout.name} | {self.start_time}"
+
 
 class Booking(models.Model):
     client = models.ForeignKey(

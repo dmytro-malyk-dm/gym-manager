@@ -20,6 +20,7 @@ from gym.models import (
 
 class HomeTemplateView(TemplateView):
     template_name = "gym/index.html"
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["num_trainers"] = TrainerProfile.objects.count()
@@ -56,7 +57,6 @@ class WorkoutListView(LoginRequiredMixin, generic.ListView):
         "trainer__user"
     ).order_by("name")
     paginate_by = 9
-
 
 
 class WorkoutDetailView(LoginRequiredMixin, generic.DetailView):
@@ -115,7 +115,6 @@ class ScheduleListView(LoginRequiredMixin, generic.ListView):
 
         return queryset
 
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["search_form"] = ScheduleSearchForm(
@@ -146,14 +145,11 @@ class ScheduleDetailView(LoginRequiredMixin, generic.DetailView):
             client=user
         ).exists()
 
-        context["available_spots"] = (
-                schedule.capacity - schedule.bookings.count()
-        )
+        context["available_spots"] = (schedule.capacity
+                                      - schedule.bookings.count())
         context["is_full"] = context["available_spots"] <= 0
-        context["can_book"] = (
-                schedule.start_time > timezone.now() and
-                user.role == "client"
-        )
+        context["can_book"] = (schedule.start_time > timezone.now()
+                               and user.role == "client")
         if user.role in ["admin", "trainer"]:
             context["show_participants"] = True
             context["participants"] = schedule.bookings.select_related(

@@ -18,7 +18,9 @@ class UserAdmin(BaseUserAdmin):
     list_filter = ("role", "is_staff",)
     search_fields = ("username", "email",)
     fieldsets = BaseUserAdmin.fieldsets + (("Role", {"fields": ("role",)}),)
-    add_fieldsets = BaseUserAdmin.add_fieldsets + (("Role", {"fields": ("role",)}),)
+    add_fieldsets = BaseUserAdmin.add_fieldsets + (
+        ("Role", {"fields": ("role",)}),
+    )
 
 
 @admin.register(TrainerProfile)
@@ -26,9 +28,9 @@ class TrainerProfileAdmin(admin.ModelAdmin):
     list_display = ("user", "specialization",)
     list_filter = ("specialization",)
     fieldsets = [
-        ('Main info', {
-            'fields': (
-                'user', "specialization"
+        ("Main info", {
+            "fields": (
+                "user", "specialization"
             ),
         }),
         ("Additional info", {
@@ -45,18 +47,21 @@ class ClientProfileAdmin(admin.ModelAdmin):
         (None, {"fields": ("user", "phone_number")}),
     )
 
+
 admin.site.register(Specialization)
+
 
 @admin.register(Workout)
 class WorkoutAdmin(admin.ModelAdmin):
     list_display = ("name", "trainer")
     search_fields = ("name",)
 
+
 @admin.register(Schedule)
 class ScheduleAdmin(admin.ModelAdmin):
     list_display = ("workout", "start_time", "capacity")
 
+
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
     list_display = ("client", "schedule", "created_at")
-
