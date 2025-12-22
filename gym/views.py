@@ -38,7 +38,12 @@ class TrainerListView(LoginRequiredMixin, generic.ListView):
     queryset = TrainerProfile.objects.select_related(
         "user", "specialization"
     ).order_by("user__first_name")
-    paginate_by = 5
+    paginate_by = 9
+
+    def get_template_names(self):
+        if self.request.headers.get('HX-Request'):
+            return ['gym/partials/trainer_cards.html']
+        return ['gym/trainerprofile_list.html']
 
 
 class TrainerDetailView(LoginRequiredMixin, generic.DetailView):
@@ -55,7 +60,12 @@ class WorkoutListView(LoginRequiredMixin, generic.ListView):
         "trainer",
         "trainer__user"
     ).order_by("name")
-    paginate_by = 5
+    paginate_by = 9
+
+    def get_template_names(self):
+        if self.request.headers.get('HX-Request'):
+            return ['gym/partials/workout_cards.html']
+        return ['gym/workout_list.html']
 
 
 class WorkoutDetailView(LoginRequiredMixin, generic.DetailView):
@@ -81,7 +91,7 @@ class TrainerOrAdminMixin(UserPassesTestMixin):
 
 class ScheduleListView(LoginRequiredMixin, generic.ListView):
     model = Schedule
-    paginate_by = 20
+    paginate_by = 12
 
     def get_queryset(self):
         queryset = Schedule.objects.filter(
@@ -90,7 +100,7 @@ class ScheduleListView(LoginRequiredMixin, generic.ListView):
             "workout",
             "workout__trainer",
             "workout__trainer__user"
-        ).order_by("start_time")
+        ).prefetch_related("bookings").order_by("start_time")
 
         form = ScheduleSearchForm(self.request.GET)
         if form.is_valid():
@@ -106,6 +116,11 @@ class ScheduleListView(LoginRequiredMixin, generic.ListView):
                 )
 
         return queryset
+
+    def get_template_names(self):
+        if self.request.headers.get('HX-Request'):
+            return ['gym/partials/schedule_cards.html']
+        return ['gym/schedule_list.html']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -148,7 +163,7 @@ class ScheduleDetailView(LoginRequiredMixin, generic.DetailView):
         if user.role in ["admin", "trainer"]:
             context["show_participants"] = True
             context["participants"] = schedule.bookings.select_related(
-                "client"
+                "client", "client__client_profile"
             )
             context["can_manage"] = True
 
