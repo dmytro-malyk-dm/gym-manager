@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="row">
-  <!-- Main Info -->
+
   <div class="col-lg-8 mb-4">
     <div class="card shadow-sm">
       <div class="card-header bg-gradient-primary d-flex justify-content-between align-items-center">
@@ -25,7 +25,7 @@
       </div>
 
       <div class="card-body">
-        <!-- DateTime Banner -->
+
         <div class="schedule-time-badge mb-4 p-4">
           <div class="row text-center">
             <div class="col-6">
@@ -41,7 +41,6 @@
           </div>
         </div>
 
-        <!-- Trainer Info -->
         <div class="card bg-light mb-4">
           <div class="card-body">
             <div class="row align-items-center">
@@ -65,11 +64,9 @@
           </div>
         </div>
 
-        <!-- Workout Description -->
         <h5 class="mb-3">About This Workout</h5>
         <p class="text-muted mb-4">{{ schedule.workout.description }}</p>
 
-        <!-- Availability -->
         <div class="card border-primary mb-4">
           <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-2">
@@ -87,7 +84,6 @@
           </div>
         </div>
 
-        <!-- Booking Actions -->
         {% if user.role == "client" %}
           <div class="d-grid gap-2">
             {% if can_book %}
@@ -124,7 +120,6 @@
     </div>
   </div>
 
-  <!-- Participants Sidebar -->
   <div class="col-lg-4">
     {% if show_participants %}
     <div class="card shadow-sm">
