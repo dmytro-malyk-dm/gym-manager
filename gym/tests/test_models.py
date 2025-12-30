@@ -2,8 +2,12 @@ from django.test import TestCase
 
 from django.contrib.auth import get_user_model
 from gym.models import (
-    TrainerProfile, ClientProfile, Specialization,
-    Workout, Schedule, Booking
+    TrainerProfile,
+    ClientProfile,
+    Specialization,
+    Workout,
+    Schedule,
+    Booking
 )
 from django.utils import timezone
 from datetime import timedelta

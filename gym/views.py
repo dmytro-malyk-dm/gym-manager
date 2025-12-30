@@ -7,7 +7,11 @@ from django.views import generic, View
 from django.views.generic import TemplateView
 from django.contrib import messages
 
-from gym.forms import ClientRegistrationForm, ScheduleSearchForm, ScheduleForm
+from gym.forms import (
+    ClientRegistrationForm,
+    ScheduleSearchForm,
+    ScheduleForm
+)
 from gym.models import (
     TrainerProfile,
     Specialization,

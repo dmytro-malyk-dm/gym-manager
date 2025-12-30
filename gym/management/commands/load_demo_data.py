@@ -2,7 +2,14 @@ from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from datetime import timedelta
-from gym.models import Specialization, TrainerProfile, ClientProfile, Workout, Schedule, Booking
+from gym.models import (
+    Specialization,
+    TrainerProfile,
+    ClientProfile,
+    Workout,
+    Schedule,
+    Booking
+)
 
 User = get_user_model()
 
