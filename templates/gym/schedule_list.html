@@ -101,11 +101,11 @@
           </a>
           {% if can_manage %}
           <a href="{% url 'gym:schedule-update' pk=schedule.id %}"
-             class="btn btn-warning btn-sm">
+             class="btn btn-warning btn-sm d-flex justify-content-center align-items-center">
             <i class="fas fa-edit"></i>
           </a>
           <a href="{% url 'gym:schedule-delete' pk=schedule.id %}"
-             class="btn btn-danger btn-sm">
+             class="btn btn-danger btn-sm d-flex justify-content-center align-items-center">
             <i class="fas fa-trash"></i>
           </a>
           {% endif %}
