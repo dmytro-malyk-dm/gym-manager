@@ -302,12 +302,14 @@ class BookingCancelView(LoginRequiredMixin, View):
 class ClientRegistrationView(generic.CreateView):
     template_name = "gym/register.html"
     form_class = ClientRegistrationForm
-    success_url = "/"
+    success_url = reverse_lazy("login")
 
-    def form_valid(self, form):
-        user = form.save()
-        login(self.request, user)
-        return redirect(self.success_url)
+    def get_success_url(self):
+        messages.success(
+            self.request,
+            "Registration successful! Please login."
+        )
+        return super().get_success_url()
 
 
 class MyBookingView(LoginRequiredMixin, generic.ListView):
