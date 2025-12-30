@@ -1,4 +1,3 @@
-from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
@@ -172,7 +171,6 @@ class ScheduleCreateView(
     """Create new schedule (trainers and admins only)"""
     model = Schedule
     form_class = ScheduleForm
-    template_name = "gym/schedule_form.html"
     success_url = reverse_lazy("gym:schedule-list")
 
     def get_form_kwargs(self):
@@ -196,7 +194,6 @@ class ScheduleUpdateView(
     """Update schedule (trainers and admins only)"""
     model = Schedule
     form_class = ScheduleForm
-    template_name = "gym/schedule_form.html"
     success_url = reverse_lazy("gym:schedule-list")
 
     def get_form_kwargs(self):
@@ -229,7 +226,6 @@ class ScheduleDeleteView(
 ):
     """Delete schedule (trainers and admins only)"""
     model = Schedule
-    template_name = "gym/schedule_confirm_delete.html"
     success_url = reverse_lazy("gym:schedule-list")
 
     def test_func(self):
