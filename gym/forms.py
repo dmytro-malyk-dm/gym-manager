@@ -114,6 +114,14 @@ class ScheduleForm(forms.ModelForm):
             raise forms.ValidationError(
                 "Cannot create schedule in the past."
             )
+        if self.instance.pk:
+            old_start = Schedule.objects.get(pk=self.instance.pk).start_time
+            now = timezone.now()
+
+            if old_start <= now:
+                raise forms.ValidationError(
+                    "Cannot edit schedule that has already started."
+                )
 
         return start_time
 
