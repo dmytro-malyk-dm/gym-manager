@@ -9,7 +9,7 @@ from django.contrib import messages
 from gym.forms import (
     ClientRegistrationForm,
     ScheduleSearchForm,
-    ScheduleForm
+    ScheduleForm, TrainerCreationForm
 )
 from gym.models import (
     TrainerProfile,
@@ -17,7 +17,7 @@ from gym.models import (
     ClientProfile,
     Workout,
     Schedule,
-    Booking
+    Booking, User
 )
 
 
@@ -325,3 +325,63 @@ class MyBookingView(LoginRequiredMixin, generic.ListView):
         context = super().get_context_data(**kwargs)
         context["now"] = timezone.now()
         return context
+
+
+class AdminOnlyMixin(UserPassesTestMixin):
+    """Mixin to restrict access to admins only"""
+
+    def test_func(self):
+        """Check if user has admin role"""
+        return self.request.user.role == "admin"
+
+    def handle_no_permission(self):
+        messages.error(
+            self.request,
+            "Only admins can access this page."
+        )
+        return redirect("gym:index")
+
+
+class TrainerCreateView(
+    LoginRequiredMixin,
+    AdminOnlyMixin,
+    generic.CreateView
+):
+    """Admin can create trainer accounts"""
+    model = User
+    form_class = TrainerCreationForm
+    success_url = reverse_lazy("gym:trainer-list")
+    template_name = "gym/trainerprofile_form.html"
+
+    def form_valid(self, form):
+        messages.success(
+            self.request,
+            f"Trainer {form.instance.username} created successfully!"
+        )
+        return super().form_valid(form)
+
+
+class TrainerUpdateView(
+    LoginRequiredMixin,
+    AdminOnlyMixin,
+    generic.UpdateView
+):
+    """Admin can edit trainer profiles"""
+    model = User
+    form_class = TrainerCreationForm
+    template_name = "gym/trainerprofile_form.html"
+
+    def get_object(self):
+        trainer_profile = get_object_or_404(TrainerProfile, pk=self.kwargs['pk'])
+        return trainer_profile.user
+
+    def get_success_url(self):
+        trainer_profile = TrainerProfile.objects.get(user=self.object)
+        return reverse_lazy("gym:trainer-detail", kwargs={"pk": trainer_profile.pk})
+
+    def form_valid(self, form):
+        messages.success(
+            self.request,
+            f"Trainer {form.instance.username} updated successfully!"
+        )
+        return super().form_valid(form)

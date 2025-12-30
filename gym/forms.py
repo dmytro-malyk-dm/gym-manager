@@ -7,7 +7,7 @@ from django.utils import timezone
 from gym.models import (
     ClientProfile,
     Schedule,
-    Workout
+    Workout, Specialization, TrainerProfile
 )
 
 User = get_user_model()
@@ -148,3 +148,89 @@ class ScheduleSearchForm(forms.Form):
             }
         )
     )
+
+
+class TrainerCreationForm(UserCreationForm):
+    """Form for admin to create/update trainer accounts"""
+
+    bio = forms.CharField(
+        widget=forms.Textarea(attrs={"class": "form-control", "rows": 4}),
+        required=False,
+        help_text="Trainer's biography"
+    )
+
+    specialization = forms.ModelChoiceField(
+        queryset=Specialization.objects.all(),
+        widget=forms.Select(attrs={"class": "form-control"}),
+        required=False,
+        help_text="Trainer's specialization"
+    )
+
+    class Meta(UserCreationForm.Meta):
+        model = User
+        fields = (
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "password1",
+            "password2",
+        )
+        widgets = {
+            "username": forms.TextInput(attrs={"class": "form-control"}),
+            "email": forms.EmailInput(attrs={"class": "form-control"}),
+            "first_name": forms.TextInput(attrs={"class": "form-control"}),
+            "last_name": forms.TextInput(attrs={"class": "form-control"}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        is_update = kwargs.get("instance") is not None
+        super().__init__(*args, **kwargs)
+
+        self.fields["password1"].widget.attrs["class"] = "form-control"
+        self.fields["password2"].widget.attrs["class"] = "form-control"
+
+        if is_update:
+            self.fields["password1"].required = False
+            self.fields["password2"].required = False
+            self.fields["password1"].help_text = "Leave blank to keep current password"
+
+            if hasattr(self.instance, "trainer_profile"):
+                self.fields["bio"].initial = self.instance.trainer_profile.bio
+                self.fields["specialization"].initial = self.instance.trainer_profile.specialization
+
+    def clean_password2(self):
+        password1 = self.cleaned_data.get("password1")
+        password2 = self.cleaned_data.get("password2")
+
+        if not password1 and not password2:
+            return password2
+
+        return super().clean_password2()
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+
+        if not user.pk:
+            user.role = "trainer"
+
+        if user.pk and self.cleaned_data.get("password1"):
+            user.set_password(self.cleaned_data["password1"])
+
+        if commit:
+            user.save()
+
+            trainer_profile, created = TrainerProfile.objects.get_or_create(
+                user=user,
+                defaults={
+                    "bio": self.cleaned_data.get("bio", ""),
+                    "specialization": self.cleaned_data.get("specialization")
+                }
+            )
+
+            if not created:
+                trainer_profile.bio = self.cleaned_data.get("bio", "")
+                trainer_profile.specialization = self.cleaned_data.get("specialization")
+                trainer_profile.save()
+
+        return user

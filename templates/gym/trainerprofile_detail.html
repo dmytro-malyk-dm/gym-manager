@@ -2,6 +2,13 @@
 {% block page_title %}Trainer Profile{% endblock %}
 
 {% block content %}
+  {% if user.role == "admin" %}
+    <div class="mb-3">
+      <a href="{% url 'gym:trainer-update' pk=trainer.id %}" class="btn btn-warning">
+        <i class="fas fa-edit me-2"></i>Edit Trainer
+      </a>
+    </div>
+  {% endif %}
 <div class="row">
   <div class="col-lg-4 mb-4">
     <div class="card shadow-sm">
