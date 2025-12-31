@@ -9,7 +9,9 @@ from django.contrib import messages
 from gym.forms import (
     ClientRegistrationForm,
     ScheduleSearchForm,
-    ScheduleForm, TrainerCreationForm
+    ScheduleForm,
+    TrainerCreationForm,
+    WorkoutForm
 )
 from gym.models import (
     TrainerProfile,
@@ -34,6 +36,21 @@ class HomeTemplateView(TemplateView):
         context["num_visit"] = num_visit
 
         return context
+
+
+class TrainerOrAdminMixin(UserPassesTestMixin):
+    """Mixin to restrict access to trainers and admins only"""
+
+    def test_func(self):
+        """Check if user has trainer or admin role"""
+        return self.request.user.role in ["trainer", "admin"]
+
+    def handle_no_permission(self):
+        messages.error(
+            self.request,
+            "Only trainers and admins can access this page."
+        )
+        return redirect("gym:schedule-list")
 
 
 class TrainerListView(LoginRequiredMixin, generic.ListView):
@@ -76,18 +93,83 @@ class WorkoutDetailView(LoginRequiredMixin, generic.DetailView):
         return context
 
 
-class TrainerOrAdminMixin(UserPassesTestMixin):
-    """Mixin to restrict access to trainers and admins only"""
+class WorkoutCreateView(
+    LoginRequiredMixin,
+    TrainerOrAdminMixin,
+    generic.CreateView
+):
+    """Trainers and admins can create workouts"""
+    model = Workout
+    form_class = WorkoutForm
+    template_name = "gym/workout_form.html"
+    success_url = reverse_lazy("gym:workout-list")
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        if self.request.user.role == "trainer":
+            form.instance.trainer = self.request.user.trainer_profile
+        messages.success(self.request, "Workout created successfully!")
+        return super().form_valid(form)
+
+
+class WorkoutUpdateView(
+    LoginRequiredMixin,
+    TrainerOrAdminMixin,
+    generic.UpdateView
+):
+    """Trainers can edit their own workouts, admins can edit any"""
+    model = Workout
+    form_class = WorkoutForm
+    template_name = "gym/workout_form.html"
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
 
     def test_func(self):
-        return self.request.user.role in ["trainer", "admin"]
+        """Check if user can edit this workout"""
+        if not super().test_func():
+            return False
+        if self.request.user.role == "trainer":
+            workout = self.get_object()
+            return workout.trainer.user == self.request.user
+        return True
 
-    def handle_no_permission(self):
-        messages.error(
-            self.request,
-            "Only trainers and admins can access this page."
-        )
-        return redirect("gym:schedule-list")
+    def get_success_url(self):
+        return reverse_lazy("gym:workout-detail", kwargs={"pk": self.object.pk})
+
+    def form_valid(self, form):
+        messages.success(self.request, "Workout updated successfully!")
+        return super().form_valid(form)
+
+
+class WorkoutDeleteView(
+    LoginRequiredMixin,
+    TrainerOrAdminMixin,
+    generic.DeleteView
+):
+    """Trainers can delete their own workouts, admins can delete any"""
+    model = Workout
+    template_name = "gym/workout_confirm_delete.html"
+    success_url = reverse_lazy("gym:workout-list")
+
+    def test_func(self):
+        """Check if user can delete this workout"""
+        if not super().test_func():
+            return False
+        if self.request.user.role == "trainer":
+            workout = self.get_object()
+            return workout.trainer.user == self.request.user
+        return True
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(request, "Workout deleted successfully!")
+        return super().delete(request, *args, **kwargs)
 
 
 class ScheduleListView(LoginRequiredMixin, generic.ListView):
@@ -202,6 +284,7 @@ class ScheduleUpdateView(
         return kwargs
 
     def test_func(self):
+        """Check if user has trainer or admin role"""
         if not super().test_func():
             return False
 
@@ -229,6 +312,7 @@ class ScheduleDeleteView(
     success_url = reverse_lazy("gym:schedule-list")
 
     def test_func(self):
+        """Check if user has trainer or admin role"""
         if not super().test_func():
             return False
 
@@ -327,8 +411,16 @@ class MyBookingView(LoginRequiredMixin, generic.ListView):
         return context
 
 
-class AdminOnlyMixin(UserPassesTestMixin):
-    """Mixin to restrict access to admins only"""
+class TrainerCreateView(
+    LoginRequiredMixin,
+    UserPassesTestMixin,
+    generic.CreateView
+):
+    """Admin can create trainer accounts"""
+    model = User
+    form_class = TrainerCreationForm
+    success_url = reverse_lazy("gym:trainer-list")
+    template_name = "gym/trainerprofile_form.html"
 
     def test_func(self):
         """Check if user has admin role"""
@@ -341,18 +433,6 @@ class AdminOnlyMixin(UserPassesTestMixin):
         )
         return redirect("gym:index")
 
-
-class TrainerCreateView(
-    LoginRequiredMixin,
-    AdminOnlyMixin,
-    generic.CreateView
-):
-    """Admin can create trainer accounts"""
-    model = User
-    form_class = TrainerCreationForm
-    success_url = reverse_lazy("gym:trainer-list")
-    template_name = "gym/trainerprofile_form.html"
-
     def form_valid(self, form):
         messages.success(
             self.request,
@@ -363,7 +443,7 @@ class TrainerCreateView(
 
 class TrainerUpdateView(
     LoginRequiredMixin,
-    AdminOnlyMixin,
+    UserPassesTestMixin,
     generic.UpdateView
 ):
     """Admin can edit trainer profiles"""
@@ -371,8 +451,18 @@ class TrainerUpdateView(
     form_class = TrainerCreationForm
     template_name = "gym/trainerprofile_form.html"
 
+    def test_func(self):
+        """Check if user can edit this trainer profile"""
+        user = self.request.user
+        if user.role == "admin":
+            return True
+        if user.role == "trainer":
+            trainer_profile = get_object_or_404(TrainerProfile, pk=self.kwargs["pk"])
+            return trainer_profile.user == user
+        return False
+
     def get_object(self):
-        trainer_profile = get_object_or_404(TrainerProfile, pk=self.kwargs['pk'])
+        trainer_profile = get_object_or_404(TrainerProfile, pk=self.kwargs["pk"])
         return trainer_profile.user
 
     def get_success_url(self):
@@ -385,3 +475,10 @@ class TrainerUpdateView(
             f"Trainer {form.instance.username} updated successfully!"
         )
         return super().form_valid(form)
+
+    def handle_no_permission(self):
+        messages.error(
+            self.request,
+            "You don't have permission to edit this profile."
+        )
+        return redirect("gym:trainer-list")

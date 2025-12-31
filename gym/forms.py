@@ -234,3 +234,20 @@ class TrainerCreationForm(UserCreationForm):
                 trainer_profile.save()
 
         return user
+
+
+class WorkoutForm(forms.ModelForm):
+    """Form for creating/updating workout"""
+
+    class Meta:
+        model = Workout
+        fields = ["name", "description", "duration_time"]
+        widgets = {
+            "name": forms.TextInput(attrs={"class": "form-control"}),
+            "description": forms.Textarea(attrs={"class": "form-control", "rows": 4}),
+            "duration_time": forms.NumberInput(attrs={"class": "form-control"}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop("user", None)
+        super().__init__(*args, **kwargs)

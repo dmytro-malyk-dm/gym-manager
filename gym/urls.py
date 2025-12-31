@@ -14,7 +14,11 @@ from gym.views import (
     MyBookingView,
     ScheduleUpdateView,
     ScheduleDeleteView,
-    ScheduleCreateView, TrainerCreateView, TrainerUpdateView
+    ScheduleCreateView,
+    TrainerCreateView,
+    TrainerUpdateView,
+    WorkoutCreateView,
+    WorkoutUpdateView, WorkoutDeleteView
 )
 
 app_name = "gym"
@@ -30,15 +34,18 @@ urlpatterns = [
     path("trainers/create/", TrainerCreateView.as_view(), name="trainer-create"),
     path("trainers/<int:pk>/update/", TrainerUpdateView.as_view(), name="trainer-update"),
     path(
-        "workouts/<int:pk>/",
-        WorkoutDetailView.as_view(),
-        name="workout-detail"
-    ),
-    path(
         "workouts/",
         WorkoutListView.as_view(),
         name="workout-list"
     ),
+    path(
+        "workouts/<int:pk>/",
+        WorkoutDetailView.as_view(),
+        name="workout-detail"
+    ),
+    path("workouts/create/", WorkoutCreateView.as_view(), name="workout-create"),
+    path("workouts/<int:pk>/update/", WorkoutUpdateView.as_view(), name="workout-update"),
+    path("workouts/<int:pk>/delete/", WorkoutDeleteView.as_view(), name="workout-delete"),
     path(
         "schedules/",
         ScheduleListView.as_view(),
