@@ -4,7 +4,7 @@
 {% block content %}
   {% if user.role == "admin" or trainer.user == user %}
     <div class="mb-3">
-      <a href="{% url 'gym:trainer-update' pk=trainer.id %}" class="btn btn-warning">
+      <a href="{% url 'accounts:trainer-update' pk=trainer.id %}" class="btn btn-warning">
         <i class="fas fa-edit me-2"></i>Edit Trainer
       </a>
     </div>
@@ -88,7 +88,7 @@
 </div>
 
 <div class="mt-3">
-  <a href="{% url 'gym:trainer-list' %}" class="btn btn-secondary">
+  <a href="{% url 'accounts:trainer-list' %}" class="btn btn-secondary">
     <i class="fas fa-arrow-left me-2"></i>Back to Trainers
   </a>
 </div>

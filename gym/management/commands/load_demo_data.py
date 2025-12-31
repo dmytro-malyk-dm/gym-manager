@@ -3,13 +3,16 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 from datetime import timedelta
 from gym.models import (
-    Specialization,
-    TrainerProfile,
-    ClientProfile,
     Workout,
     Schedule,
     Booking
 )
+from accounts.models import (
+    TrainerProfile,
+    ClientProfile,
+    Specialization
+)
+
 
 User = get_user_model()
 

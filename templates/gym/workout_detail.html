@@ -72,7 +72,7 @@
               {{ workout.trainer.user.first_name|first|upper }}{{ workout.trainer.user.last_name|first|upper }}
             </div>
             <h6 class="mb-1">
-              <a href="{% url 'gym:trainer-detail' pk=workout.trainer.id %}" class="text-dark">
+              <a href="{% url 'accounts:trainer-detail' pk=workout.trainer.id %}" class="text-dark">
                 {{ workout.trainer.user.get_full_name }}
               </a>
             </h6>
@@ -80,7 +80,7 @@
               <i class="fas fa-award text-warning me-1"></i>
               {{ workout.trainer.specialization.name|default:"General Fitness" }}
             </p>
-            <a href="{% url 'gym:trainer-detail' pk=workout.trainer.id %}"
+            <a href="{% url 'accounts:trainer-detail' pk=workout.trainer.id %}"
                class="btn btn-sm btn-outline-primary w-100">
               View Full Profile
             </a>
