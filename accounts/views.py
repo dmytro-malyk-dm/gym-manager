@@ -7,25 +7,23 @@ from django.views import generic
 from accounts.forms import ClientRegistrationForm, TrainerCreationForm
 from accounts.models import TrainerProfile, User
 
+
 class ClientRegistrationView(generic.CreateView):
     template_name = "accounts/register.html"
     form_class = ClientRegistrationForm
     success_url = reverse_lazy("login")
 
     def get_success_url(self):
-        messages.success(
-            self.request,
-            "Registration successful! Please login."
-        )
+        messages.success(self.request, "Registration successful! Please login.")
         return super().get_success_url()
 
 
 class TrainerListView(LoginRequiredMixin, generic.ListView):
     model = TrainerProfile
     context_object_name = "trainers"
-    queryset = TrainerProfile.objects.select_related(
-        "user", "specialization"
-    ).order_by("user__first_name")
+    queryset = TrainerProfile.objects.select_related("user", "specialization").order_by(
+        "user__first_name"
+    )
     paginate_by = 9
 
 
@@ -36,12 +34,10 @@ class TrainerDetailView(LoginRequiredMixin, generic.DetailView):
         "user", "specialization"
     ).prefetch_related("workouts")
 
-class TrainerCreateView(
-    LoginRequiredMixin,
-    UserPassesTestMixin,
-    generic.CreateView
-):
+
+class TrainerCreateView(LoginRequiredMixin, UserPassesTestMixin, generic.CreateView):
     """Admin can create trainer accounts"""
+
     model = User
     form_class = TrainerCreationForm
     success_url = reverse_lazy("accounts:trainer-list")
@@ -52,25 +48,19 @@ class TrainerCreateView(
         return self.request.user.role == "admin"
 
     def handle_no_permission(self):
-        messages.error(
-            self.request,
-            "Only admins can access this page."
-        )
+        messages.error(self.request, "Only admins can access this page.")
         return redirect("accounts:trainer-list")
 
     def form_valid(self, form):
         messages.success(
-            self.request,
-            f"Trainer {form.instance.username} created successfully!"
+            self.request, f"Trainer {form.instance.username} created successfully!"
         )
         return super().form_valid(form)
 
-class TrainerUpdateView(
-    LoginRequiredMixin,
-    UserPassesTestMixin,
-    generic.UpdateView
-):
+
+class TrainerUpdateView(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView):
     """Admin can edit trainer profiles"""
+
     model = User
     form_class = TrainerCreationForm
     template_name = "accounts/trainerprofile_form.html"
@@ -91,18 +81,16 @@ class TrainerUpdateView(
 
     def get_success_url(self):
         trainer_profile = TrainerProfile.objects.get(user=self.object)
-        return reverse_lazy("accounts:trainer-detail", kwargs={"pk": trainer_profile.pk})
+        return reverse_lazy(
+            "accounts:trainer-detail", kwargs={"pk": trainer_profile.pk}
+        )
 
     def form_valid(self, form):
         messages.success(
-            self.request,
-            f"Trainer {form.instance.username} updated successfully!"
+            self.request, f"Trainer {form.instance.username} updated successfully!"
         )
         return super().form_valid(form)
 
     def handle_no_permission(self):
-        messages.error(
-            self.request,
-            "You don't have permission to edit this profile."
-        )
+        messages.error(self.request, "You don't have permission to edit this profile.")
         return redirect("accounts:trainer-list")

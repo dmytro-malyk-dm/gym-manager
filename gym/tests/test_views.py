@@ -7,7 +7,7 @@ from gym.models import (
     Specialization,
     Workout,
     Schedule,
-    Booking
+    Booking,
 )
 from django.utils import timezone
 from datetime import timedelta
@@ -27,16 +27,14 @@ class TrainerListViewTest(TestCase):
     def setUp(self):
         self.client_http = Client()
         self.user = User.objects.create_user(
-            username="testuser",
-            password="testpass123",
-            role="client"
+            username="testuser", password="testpass123", role="client"
         )
         self.specialization = Specialization.objects.create(name="Yoga")
 
     def test_trainer_list_requires_login(self):
         """Test that trainer list requires authentication"""
         response = self.client_http.get(reverse("gym:trainer-list"))
-        self.assertEqual(response.status_code, 302) 
+        self.assertEqual(response.status_code, 302)
 
     def test_trainer_list_authenticated(self):
         """Test trainer list loads for authenticated users"""
@@ -49,9 +47,7 @@ class WorkoutListViewTest(TestCase):
     def setUp(self):
         self.client_http = Client()
         self.user = User.objects.create_user(
-            username="testuser",
-            password="testpass123",
-            role="client"
+            username="testuser", password="testpass123", role="client"
         )
 
     def test_workout_list_requires_login(self):
@@ -70,9 +66,7 @@ class ScheduleListViewTest(TestCase):
     def setUp(self):
         self.client_http = Client()
         self.user = User.objects.create_user(
-            username="testuser",
-            password="testpass123",
-            role="client"
+            username="testuser", password="testpass123", role="client"
         )
 
     def test_schedule_list_requires_login(self):
@@ -98,32 +92,20 @@ class ScheduleListViewTest(TestCase):
         self.client_http.login(username="testuser", password="testpass123")
 
         trainer_user = User.objects.create_user(
-            username="trainer1",
-            password="testpass123",
-            role="trainer"
+            username="trainer1", password="testpass123", role="trainer"
         )
         spec = Specialization.objects.create(name="Cardio")
-        trainer = TrainerProfile.objects.create(
-            user=trainer_user,
-            specialization=spec
-        )
+        trainer = TrainerProfile.objects.create(user=trainer_user, specialization=spec)
         workout = Workout.objects.create(
-            name="HIIT",
-            description="High intensity",
-            duration_time=45,
-            trainer=trainer
+            name="HIIT", description="High intensity", duration_time=45, trainer=trainer
         )
 
         Schedule.objects.create(
-            workout=workout,
-            start_time=timezone.now() - timedelta(days=1),
-            capacity=10
+            workout=workout, start_time=timezone.now() - timedelta(days=1), capacity=10
         )
 
         future_schedule = Schedule.objects.create(
-            workout=workout,
-            start_time=timezone.now() + timedelta(days=1),
-            capacity=10
+            workout=workout, start_time=timezone.now() + timedelta(days=1), capacity=10
         )
 
         response = self.client_http.get(reverse("gym:schedule-list"))
@@ -137,36 +119,24 @@ class BookingCreateViewTest(TestCase):
         self.client_http = Client()
 
         self.client_user = User.objects.create_user(
-            username="client1",
-            password="testpass123",
-            role="client"
+            username="client1", password="testpass123", role="client"
         )
-        ClientProfile.objects.create(
-            user=self.client_user,
-            phone_number=380501234567
-        )
+        ClientProfile.objects.create(user=self.client_user, phone_number=380501234567)
 
         trainer_user = User.objects.create_user(
-            username="trainer1",
-            password="testpass123",
-            role="trainer"
+            username="trainer1", password="testpass123", role="trainer"
         )
         spec = Specialization.objects.create(name="Yoga")
-        trainer = TrainerProfile.objects.create(
-            user=trainer_user,
-            specialization=spec
-        )
+        trainer = TrainerProfile.objects.create(user=trainer_user, specialization=spec)
         workout = Workout.objects.create(
             name="Morning Yoga",
             description="Relaxing",
             duration_time=60,
-            trainer=trainer
+            trainer=trainer,
         )
 
         self.schedule = Schedule.objects.create(
-            workout=workout,
-            start_time=timezone.now() + timedelta(days=1),
-            capacity=10
+            workout=workout, start_time=timezone.now() + timedelta(days=1), capacity=10
         )
 
     def test_booking_requires_login(self):
@@ -185,8 +155,7 @@ class BookingCreateViewTest(TestCase):
 
         self.assertTrue(
             Booking.objects.filter(
-                client=self.client_user,
-                schedule=self.schedule
+                client=self.client_user, schedule=self.schedule
             ).exists()
         )
 
@@ -194,10 +163,7 @@ class BookingCreateViewTest(TestCase):
         """Test that duplicate bookings are prevented"""
         self.client_http.login(username="client1", password="testpass123")
 
-        Booking.objects.create(
-            client=self.client_user,
-            schedule=self.schedule
-        )
+        Booking.objects.create(client=self.client_user, schedule=self.schedule)
 
         url = reverse("gym:schedule-book", kwargs={"pk": self.schedule.pk})
         response = self.client_http.post(url)
@@ -206,28 +172,19 @@ class BookingCreateViewTest(TestCase):
 
         self.assertEqual(
             Booking.objects.filter(
-                client=self.client_user,
-                schedule=self.schedule
+                client=self.client_user, schedule=self.schedule
             ).count(),
-            1
+            1,
         )
 
     def test_booking_full_schedule_prevented(self):
         """Test that booking full schedule is prevented"""
         for i in range(10):
             user = User.objects.create_user(
-                username=f"client{i + 2}",
-                password="testpass123",
-                role="client"
+                username=f"client{i + 2}", password="testpass123", role="client"
             )
-            ClientProfile.objects.create(
-                user=user,
-                phone_number=380501234560 + i
-            )
-            Booking.objects.create(
-                client=user,
-                schedule=self.schedule
-            )
+            ClientProfile.objects.create(user=user, phone_number=380501234560 + i)
+            Booking.objects.create(client=user, schedule=self.schedule)
 
         self.client_http.login(username="client1", password="testpass123")
         url = reverse("gym:schedule-book", kwargs={"pk": self.schedule.pk})
@@ -237,8 +194,7 @@ class BookingCreateViewTest(TestCase):
 
         self.assertFalse(
             Booking.objects.filter(
-                client=self.client_user,
-                schedule=self.schedule
+                client=self.client_user, schedule=self.schedule
             ).exists()
         )
 
@@ -248,40 +204,27 @@ class BookingCancelViewTest(TestCase):
         self.client_http = Client()
 
         self.client_user = User.objects.create_user(
-            username="client1",
-            password="testpass123",
-            role="client"
+            username="client1", password="testpass123", role="client"
         )
-        ClientProfile.objects.create(
-            user=self.client_user,
-            phone_number=380501234567
-        )
+        ClientProfile.objects.create(user=self.client_user, phone_number=380501234567)
 
         trainer_user = User.objects.create_user(
-            username="trainer1",
-            password="testpass123",
-            role="trainer"
+            username="trainer1", password="testpass123", role="trainer"
         )
         spec = Specialization.objects.create(name="Yoga")
-        trainer = TrainerProfile.objects.create(
-            user=trainer_user,
-            specialization=spec
-        )
+        trainer = TrainerProfile.objects.create(user=trainer_user, specialization=spec)
         workout = Workout.objects.create(
             name="Morning Yoga",
             description="Relaxing",
             duration_time=60,
-            trainer=trainer
+            trainer=trainer,
         )
 
         self.schedule = Schedule.objects.create(
-            workout=workout,
-            start_time=timezone.now() + timedelta(days=1),
-            capacity=10
+            workout=workout, start_time=timezone.now() + timedelta(days=1), capacity=10
         )
         self.booking = Booking.objects.create(
-            client=self.client_user,
-            schedule=self.schedule
+            client=self.client_user, schedule=self.schedule
         )
 
     def test_cancel_booking_success(self):
@@ -294,8 +237,7 @@ class BookingCancelViewTest(TestCase):
 
         self.assertFalse(
             Booking.objects.filter(
-                client=self.client_user,
-                schedule=self.schedule
+                client=self.client_user, schedule=self.schedule
             ).exists()
         )
 
@@ -316,7 +258,7 @@ class ClientRegistrationViewTest(TestCase):
             "last_name": "Client",
             "password1": "testpass123",
             "password2": "testpass123",
-            "phone_number": "+380501234567"
+            "phone_number": "+380501234567",
         }
         response = self.client.post(reverse("gym:register"), data)
 

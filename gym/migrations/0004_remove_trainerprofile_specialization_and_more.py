@@ -7,42 +7,46 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0001_initial'),
-        ('gym', '0003_alter_clientprofile_phone_number'),
+        ("accounts", "0001_initial"),
+        ("gym", "0003_alter_clientprofile_phone_number"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='trainerprofile',
-            name='specialization',
+            model_name="trainerprofile",
+            name="specialization",
         ),
         migrations.RemoveField(
-            model_name='trainerprofile',
-            name='user',
+            model_name="trainerprofile",
+            name="user",
         ),
         migrations.AlterField(
-            model_name='workout',
-            name='trainer',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='workouts', to='accounts.trainerprofile'),
+            model_name="workout",
+            name="trainer",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="workouts",
+                to="accounts.trainerprofile",
+            ),
         ),
         migrations.RemoveField(
-            model_name='user',
-            name='groups',
+            model_name="user",
+            name="groups",
         ),
         migrations.RemoveField(
-            model_name='user',
-            name='user_permissions',
+            model_name="user",
+            name="user_permissions",
         ),
         migrations.DeleteModel(
-            name='ClientProfile',
+            name="ClientProfile",
         ),
         migrations.DeleteModel(
-            name='Specialization',
+            name="Specialization",
         ),
         migrations.DeleteModel(
-            name='TrainerProfile',
+            name="TrainerProfile",
         ),
         migrations.DeleteModel(
-            name='User',
+            name="User",
         ),
     ]

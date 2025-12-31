@@ -8,9 +8,7 @@ from accounts.models import User, TrainerProfile, ClientProfile, Specialization
 class CustomUserAdmin(UserAdmin):
     list_display = ["username", "email", "first_name", "last_name", "role"]
     list_filter = ["role", "is_staff", "is_active"]
-    fieldsets = UserAdmin.fieldsets + (
-        ("Role", {"fields": ("role",)}),
-    )
+    fieldsets = UserAdmin.fieldsets + (("Role", {"fields": ("role",)}),)
 
 
 @admin.register(TrainerProfile)

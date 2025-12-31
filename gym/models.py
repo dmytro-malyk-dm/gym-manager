@@ -19,9 +19,7 @@ class Workout(models.Model):
 
 class Schedule(models.Model):
     workout = models.ForeignKey(
-        Workout,
-        on_delete=models.CASCADE,
-        related_name="schedules"
+        Workout, on_delete=models.CASCADE, related_name="schedules"
     )
 
     start_time = models.DateTimeField()
@@ -36,12 +34,10 @@ class Booking(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="bookings",
-        limit_choices_to={"role": User.Role.CLIENT}
+        limit_choices_to={"role": User.Role.CLIENT},
     )
     schedule = models.ForeignKey(
-        Schedule,
-        on_delete=models.CASCADE,
-        related_name="bookings"
+        Schedule, on_delete=models.CASCADE, related_name="bookings"
     )
 
     created_at = models.DateTimeField(auto_now_add=True)

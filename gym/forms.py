@@ -13,11 +13,8 @@ class ScheduleForm(forms.ModelForm):
         widgets = {
             "workout": forms.Select(attrs={"class": "form-control"}),
             "start_time": forms.DateTimeInput(
-                attrs={
-                    "class": "form-control",
-                    "type": "datetime-local"
-                },
-                format="%Y-%m-%dT%H:%M"
+                attrs={"class": "form-control", "type": "datetime-local"},
+                format="%Y-%m-%dT%H:%M",
             ),
             "capacity": forms.NumberInput(attrs={"class": "form-control"}),
         }
@@ -38,9 +35,7 @@ class ScheduleForm(forms.ModelForm):
         start_time = self.cleaned_data.get("start_time")
 
         if start_time and start_time < timezone.now():
-            raise forms.ValidationError(
-                "Cannot create schedule in the past."
-            )
+            raise forms.ValidationError("Cannot create schedule in the past.")
         if self.instance.pk:
             old_start = Schedule.objects.get(pk=self.instance.pk).start_time
             now = timezone.now()
@@ -55,25 +50,23 @@ class ScheduleForm(forms.ModelForm):
 
 class ScheduleSearchForm(forms.Form):
     """Form for searching schedule"""
+
     date = forms.DateField(
         required=False,
         widget=forms.DateInput(
             attrs={
                 "type": "date",
                 "class": "form-control",
-                "placeholder": "Select date"
+                "placeholder": "Select date",
             }
-        )
+        ),
     )
     workout_name = forms.CharField(
         max_length=255,
         required=False,
         widget=forms.TextInput(
-            attrs={
-                "class": "form-control",
-                "placeholder": "Search by workout name..."
-            }
-        )
+            attrs={"class": "form-control", "placeholder": "Search by workout name..."}
+        ),
     )
 
 

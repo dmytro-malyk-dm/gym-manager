@@ -9,11 +9,8 @@ class User(AbstractUser):
         CLIENT = "client", _("Client")
         TRAINER = "trainer", _("Trainer")
         ADMIN = "admin", _("Admin")
-    role = models.CharField(
-        max_length=63,
-        choices=Role.choices,
-        default=Role.CLIENT
-    )
+
+    role = models.CharField(max_length=63, choices=Role.choices, default=Role.CLIENT)
 
     def __str__(self):
         return self.username
@@ -23,14 +20,11 @@ class TrainerProfile(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="trainer_profile"
+        related_name="trainer_profile",
     )
     bio = models.TextField(blank=True)
     specialization = models.ForeignKey(
-        "Specialization",
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name="trainers"
+        "Specialization", on_delete=models.SET_NULL, null=True, related_name="trainers"
     )
 
     def __str__(self):
@@ -41,7 +35,7 @@ class ClientProfile(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="client_profile"
+        related_name="client_profile",
     )
     phone_number = models.CharField(max_length=20)
 

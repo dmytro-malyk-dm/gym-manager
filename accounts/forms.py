@@ -47,8 +47,7 @@ class ClientRegistrationForm(UserCreationForm):
         pattern = r"^\+380\d{9}$"
         if not re.match(pattern, phone):
             raise forms.ValidationError(
-                "Phone number must start with +380 "
-                "and contain exactly 9 digits"
+                "Phone number must start with +380 " "and contain exactly 9 digits"
             )
 
         return phone
@@ -66,8 +65,7 @@ class ClientRegistrationForm(UserCreationForm):
             user.save()
 
             ClientProfile.objects.create(
-                user=user,
-                phone_number=self.cleaned_data["phone_number"]
+                user=user, phone_number=self.cleaned_data["phone_number"]
             )
 
         return user
@@ -79,14 +77,14 @@ class TrainerCreationForm(UserCreationForm):
     bio = forms.CharField(
         widget=forms.Textarea(attrs={"class": "form-control", "rows": 4}),
         required=False,
-        help_text="Trainer's biography"
+        help_text="Trainer's biography",
     )
 
     specialization = forms.ModelChoiceField(
         queryset=Specialization.objects.all(),
         widget=forms.Select(attrs={"class": "form-control"}),
         required=False,
-        help_text="Trainer's specialization"
+        help_text="Trainer's specialization",
     )
 
     class Meta(UserCreationForm.Meta):
@@ -120,7 +118,9 @@ class TrainerCreationForm(UserCreationForm):
 
             if hasattr(self.instance, "trainer_profile"):
                 self.fields["bio"].initial = self.instance.trainer_profile.bio
-                self.fields["specialization"].initial = self.instance.trainer_profile.specialization
+                self.fields["specialization"].initial = (
+                    self.instance.trainer_profile.specialization
+                )
 
     def clean_password2(self):
         password1 = self.cleaned_data.get("password1")
@@ -130,9 +130,7 @@ class TrainerCreationForm(UserCreationForm):
             return password2
 
         if password1 and password2 and password1 != password2:
-            raise forms.ValidationError(
-                "The two password fields didn't match."
-            )
+            raise forms.ValidationError("The two password fields didn't match.")
 
         return password2
 
@@ -152,8 +150,8 @@ class TrainerCreationForm(UserCreationForm):
                 user=user,
                 defaults={
                     "bio": self.cleaned_data.get("bio", ""),
-                    "specialization": self.cleaned_data.get("specialization")
-                }
+                    "specialization": self.cleaned_data.get("specialization"),
+                },
             )
 
             if not created:

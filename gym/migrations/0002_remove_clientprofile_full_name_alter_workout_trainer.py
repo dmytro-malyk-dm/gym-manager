@@ -7,17 +7,21 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('gym', '0001_initial'),
+        ("gym", "0001_initial"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='clientprofile',
-            name='full_name',
+            model_name="clientprofile",
+            name="full_name",
         ),
         migrations.AlterField(
-            model_name='workout',
-            name='trainer',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='workouts', to='gym.trainerprofile'),
+            model_name="workout",
+            name="trainer",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="workouts",
+                to="gym.trainerprofile",
+            ),
         ),
     ]

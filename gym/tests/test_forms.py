@@ -18,7 +18,7 @@ class ClientRegistrationFormTest(TestCase):
             "last_name": "Client",
             "password1": "testpass123",
             "password2": "testpass123",
-            "phone_number": "+380501234567"
+            "phone_number": "+380501234567",
         }
         form = ClientRegistrationForm(data=data)
         self.assertTrue(form.is_valid())
@@ -32,7 +32,7 @@ class ClientRegistrationFormTest(TestCase):
             "last_name": "Client",
             "password1": "testpass123",
             "password2": "testpass123",
-            "phone_number": "0501234567"  
+            "phone_number": "0501234567",
         }
         form = ClientRegistrationForm(data=data)
         self.assertFalse(form.is_valid())
@@ -47,7 +47,7 @@ class ClientRegistrationFormTest(TestCase):
             "last_name": "Client",
             "password1": "testpass123",
             "password2": "testpass123",
-            "phone_number": "+38050123456"  
+            "phone_number": "+38050123456",
         }
         form = ClientRegistrationForm(data=data)
         self.assertFalse(form.is_valid())
@@ -61,7 +61,7 @@ class ClientRegistrationFormTest(TestCase):
             "last_name": "Client",
             "password1": "testpass123",
             "password2": "differentpass",
-            "phone_number": "+380501234567"
+            "phone_number": "+380501234567",
         }
         form = ClientRegistrationForm(data=data)
         self.assertFalse(form.is_valid())
@@ -75,7 +75,7 @@ class ClientRegistrationFormTest(TestCase):
             "last_name": "Client",
             "password1": "testpass123",
             "password2": "testpass123",
-            "phone_number": "+380501234567"
+            "phone_number": "+380501234567",
         }
         form = ClientRegistrationForm(data=data)
         self.assertTrue(form.is_valid())
@@ -86,29 +86,24 @@ class ClientRegistrationFormTest(TestCase):
 
 class ScheduleFormTest(TestCase):
     def setUp(self):
-        
+
         self.trainer_user = User.objects.create_user(
-            username="trainer1",
-            password="testpass123",
-            role="trainer"
+            username="trainer1", password="testpass123", role="trainer"
         )
         self.admin_user = User.objects.create_user(
-            username="admin1",
-            password="testpass123",
-            role="admin"
+            username="admin1", password="testpass123", role="admin"
         )
 
         spec = Specialization.objects.create(name="Yoga")
         self.trainer = TrainerProfile.objects.create(
-            user=self.trainer_user,
-            specialization=spec
+            user=self.trainer_user, specialization=spec
         )
 
         self.workout = Workout.objects.create(
             name="Morning Yoga",
             description="Relaxing yoga session",
             duration_time=60,
-            trainer=self.trainer
+            trainer=self.trainer,
         )
 
     def test_valid_schedule_form(self):
@@ -117,7 +112,7 @@ class ScheduleFormTest(TestCase):
         data = {
             "workout": self.workout.id,
             "start_time": future_time.strftime("%Y-%m-%dT%H:%M"),
-            "capacity": 20
+            "capacity": 20,
         }
         form = ScheduleForm(data=data, user=self.trainer_user)
         self.assertTrue(form.is_valid())
@@ -128,7 +123,7 @@ class ScheduleFormTest(TestCase):
         data = {
             "workout": self.workout.id,
             "start_time": past_time.strftime("%Y-%m-%dT%H:%M"),
-            "capacity": 20
+            "capacity": 20,
         }
         form = ScheduleForm(data=data, user=self.trainer_user)
         self.assertFalse(form.is_valid())
@@ -137,19 +132,16 @@ class ScheduleFormTest(TestCase):
     def test_trainer_can_only_see_own_workouts(self):
         """Test that trainer can only select their own workouts"""
         other_trainer_user = User.objects.create_user(
-            username="trainer2",
-            password="testpass123",
-            role="trainer"
+            username="trainer2", password="testpass123", role="trainer"
         )
         other_trainer = TrainerProfile.objects.create(
-            user=other_trainer_user,
-            specialization=self.trainer.specialization
+            user=other_trainer_user, specialization=self.trainer.specialization
         )
         other_workout = Workout.objects.create(
             name="Other Workout",
             description="Description",
             duration_time=45,
-            trainer=other_trainer
+            trainer=other_trainer,
         )
 
         form = ScheduleForm(user=self.trainer_user)
@@ -160,19 +152,16 @@ class ScheduleFormTest(TestCase):
     def test_admin_can_see_all_workouts(self):
         """Test that admin can see all workouts"""
         other_trainer_user = User.objects.create_user(
-            username="trainer2",
-            password="testpass123",
-            role="trainer"
+            username="trainer2", password="testpass123", role="trainer"
         )
         other_trainer = TrainerProfile.objects.create(
-            user=other_trainer_user,
-            specialization=self.trainer.specialization
+            user=other_trainer_user, specialization=self.trainer.specialization
         )
         other_workout = Workout.objects.create(
             name="Other Workout",
             description="Description",
             duration_time=45,
-            trainer=other_trainer
+            trainer=other_trainer,
         )
 
         form = ScheduleForm(user=self.admin_user)
@@ -189,27 +178,18 @@ class ScheduleSearchFormTest(TestCase):
 
     def test_date_search_form_valid(self):
         """Test search form with date"""
-        data = {
-            "date": "2025-12-25",
-            "workout_name": ""
-        }
+        data = {"date": "2025-12-25", "workout_name": ""}
         form = ScheduleSearchForm(data=data)
         self.assertTrue(form.is_valid())
 
     def test_workout_name_search_form_valid(self):
         """Test search form with workout name"""
-        data = {
-            "date": "",
-            "workout_name": "Yoga"
-        }
+        data = {"date": "", "workout_name": "Yoga"}
         form = ScheduleSearchForm(data=data)
         self.assertTrue(form.is_valid())
 
     def test_both_fields_search_form_valid(self):
         """Test search form with both fields"""
-        data = {
-            "date": "2025-12-25",
-            "workout_name": "Yoga"
-        }
+        data = {"date": "2025-12-25", "workout_name": "Yoga"}
         form = ScheduleSearchForm(data=data)
         self.assertTrue(form.is_valid())
