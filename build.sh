@@ -10,6 +10,3 @@ python manage.py collectstatic --no-input
 
 # Apply any outstanding database migrations
 python manage.py migrate
-
-# TEMP: load demo data ONCE
-python manage.py load_demo_data
