@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% load gym_extras %}
+{% block page_title %}Schedule{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h1 class="mb-0">Class Schedule</h1>
+    <p class="text-muted mb-0">Find and book your next workout</p>
+  </div>
+  {% if can_manage %}
+    <a href="{% url 'gym:schedule-create' %}" class="btn btn-success">
+      <i class="fas fa-plus me-2"></i>Add Schedule
+    </a>
+  {% endif %}
+</div>
+
+<div class="card mb-4 shadow-sm">
+  <div class="card-body">
+    <form method="get">
+      <div class="row g-3">
+        <div class="col-md-5">
+          <label class="form-label small text-muted mb-1">
+            <i class="fas fa-calendar me-1"></i>Date
+          </label>
+          {{ search_form.date }}
+        </div>
+        <div class="col-md-5">
+          <label class="form-label small text-muted mb-1">
+            <i class="fas fa-search me-1"></i>Workout Name
+          </label>
+          {{ search_form.workout_name }}
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+          <button type="submit" class="btn btn-primary btn-block mb-0">
+            <i class="fas fa-search me-2"></i>Search
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 mb-4">
+  {% for schedule in schedule_list %}
+  <div class="col">
+    <div class="card card-hover h-100 shadow-sm">
+      <div class="card-body">
+
+        <h5 class="card-title mb-3">
+          <i class="fas fa-dumbbell text-primary me-2"></i>
+          {{ schedule.workout.name }}
+        </h5>
+
+        <div class="schedule-time-badge mb-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <span>
+              <i class="fas fa-calendar-day me-2"></i>
+              {{ schedule.start_time|date:"d M Y" }}
+            </span>
+            <span>
+              <i class="fas fa-clock me-2"></i>
+              {{ schedule.start_time|date:"H:i" }}
+            </span>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <small class="text-muted d-block mb-1">Trainer</small>
+          <div class="d-flex align-items-center">
+            <div class="trainer-avatar" style="width: 40px; height: 40px; font-size: 1rem;">
+              {{ schedule.workout.trainer.user.first_name|first|upper }}{{ schedule.workout.trainer.user.last_name|first|upper }}
+            </div>
+            <span class="ms-2 fw-bold">
+              {{ schedule.workout.trainer.user.get_full_name }}
+            </span>
+          </div>
+        </div>
+
+        {% with available=schedule.capacity booked=schedule.bookings.count spots_left=schedule.capacity|subtract:schedule.bookings.count %}
+        <div class="mb-3">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <small class="text-muted">Availability</small>
+            <span class="badge {% if spots_left > 0 %}bg-success{% else %}bg-danger{% endif %}">
+              {{ spots_left }} / {{ available }} spots
+            </span>
+          </div>
+          <div class="progress" style="height: 6px;">
+            <div class="progress-bar bg-gradient-primary"
+                 role="progressbar"
+                 style="width: {% widthratio booked available 100 %}%">
+            </div>
+          </div>
+        </div>
+        {% endwith %}
+
+        <div class="d-flex gap-2">
+          <a href="{% url 'gym:schedule-detail' pk=schedule.id %}"
+             class="btn btn-primary btn-sm flex-grow-1">
+            <i class="fas fa-info-circle me-1"></i>Details
+          </a>
+          {% if can_manage %}
+          <a href="{% url 'gym:schedule-update' pk=schedule.id %}"
+             class="btn btn-warning btn-sm d-flex justify-content-center align-items-center">
+            <i class="fas fa-edit"></i>
+          </a>
+          <a href="{% url 'gym:schedule-delete' pk=schedule.id %}"
+             class="btn btn-danger btn-sm d-flex justify-content-center align-items-center">
+            <i class="fas fa-trash"></i>
+          </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12">
+    <div class="alert alert-info text-center">
+      <i class="fas fa-info-circle me-2"></i>No upcoming classes found.
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% include "includes/pagination.html" %}
+{% endblock %}

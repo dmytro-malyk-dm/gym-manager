@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}
+  <title>Dashboard - Gym Manager</title>
+{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+  <div class="row">
+
+  <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
+    <div class="card">
+      <div class="card-body p-3">
+        <div class="row">
+          <div class="col-8">
+            <div class="numbers">
+              <p class="text-sm mb-0 text-capitalize font-weight-bold">Trainers</p>
+              <h5 class="font-weight-bolder mb-0">
+                {{ num_trainers }}
+              </h5>
+            </div>
+          </div>
+          <div class="col-4 text-end">
+            <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
+              <i class="fas fa-dumbbell text-lg opacity-10" aria-hidden="true"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
+    <div class="card">
+      <div class="card-body p-3">
+        <div class="row">
+          <div class="col-8">
+            <div class="numbers">
+              <p class="text-sm mb-0 text-capitalize font-weight-bold">Workouts</p>
+              <h5 class="font-weight-bolder mb-0">
+                {{ num_specialization }}
+              </h5>
+            </div>
+          </div>
+          <div class="col-4 text-end">
+            <div class="icon icon-shape bg-gradient-success shadow text-center border-radius-md">
+              <i class="fas fa-running text-lg opacity-10" aria-hidden="true"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
+    <div class="card">
+      <div class="card-body p-3">
+        <div class="row">
+          <div class="col-8">
+            <div class="numbers">
+              <p class="text-sm mb-0 text-capitalize font-weight-bold">Clients</p>
+              <h5 class="font-weight-bolder mb-0">
+                {{ num_clients }}
+              </h5>
+            </div>
+          </div>
+          <div class="col-4 text-end">
+            <div class="icon icon-shape bg-gradient-info shadow text-center border-radius-md">
+              <i class="fas fa-users text-lg opacity-10" aria-hidden="true"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="row mt-4">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header pb-0">
+        <h6>Welcome to Gym Manager</h6>
+      </div>
+      <div class="card-body">
+        <p class="text-sm">
+          Manage your gym efficiently with our comprehensive system.
+        </p>
+        {% if user.is_authenticated %}
+          {% if user.role == "client" %}
+            <a href="{% url 'gym:schedule-list' %}" class="btn btn-primary">
+              Browse Schedule
+            </a>
+          {% endif %}
+        {% else %}
+          <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
+          <a href="{% url 'accounts:register' %}" class="btn btn-success">Register</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

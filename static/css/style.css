@@ -1,0 +1,289 @@
+
+/* Card hover effects */
+.card-hover {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Workout card image */
+.workout-card-img {
+  height: 200px;
+  object-fit: cover;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Trainer avatar */
+.trainer-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: white;
+  font-weight: bold;
+}
+
+.schedule-time-badge {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.sidenav {
+  transform: translateX(0) !important;
+  position: fixed !important;
+  left: 0 !important;
+  top: 0 !important;
+  height: 100vh !important;
+  z-index: 1050;
+}
+
+
+.main-content {
+  margin-left: 17rem !important;
+  transition: margin-left 0.3s ease;
+}
+
+
+.navbar-toggler {
+  display: none !important;
+}
+
+
+.sidenav-backdrop {
+  display: none !important;
+}
+
+
+@media (max-width: 1199.98px) {
+
+  .sidenav {
+    width: 15rem !important;
+  }
+
+
+  .main-content {
+    margin-left: 15rem !important;
+  }
+
+
+  .sidenav .nav-link-text {
+    font-size: 0.9rem;
+  }
+
+
+  .sidenav .icon {
+    width: 2.2rem !important;
+    height: 2.2rem !important;
+  }
+}
+
+
+@media (max-width: 767.98px) {
+
+  .sidenav {
+    width: 12rem !important;
+  }
+
+
+  .main-content {
+    margin-left: 12rem !important;
+  }
+
+
+  .sidenav .nav-link-text {
+    font-size: 0.8rem;
+  }
+
+
+  .sidenav .icon {
+    width: 2rem !important;
+    height: 2rem !important;
+  }
+
+
+  .navbar .d-sm-inline {
+    display: none !important;
+  }
+
+
+  .container-fluid {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+}
+
+
+@media (max-width: 575.98px) {
+
+  .sidenav {
+    width: 10rem !important;
+  }
+
+
+  .main-content {
+    margin-left: 10rem !important;
+  }
+
+
+  .sidenav .nav-link-text {
+    font-size: 0.75rem;
+  }
+
+
+  .sidenav .nav-link {
+    padding: 0.5rem 0.75rem !important;
+  }
+
+
+  .sidenav-header {
+    padding: 1rem 0.5rem !important;
+  }
+
+  .sidenav-header .navbar-brand {
+    font-size: 1rem !important;
+  }
+
+
+  .sidenav h6 {
+    font-size: 0.65rem !important;
+  }
+}
+
+
+@media (max-width: 399.98px) {
+
+  .sidenav {
+    width: 4.5rem !important;
+  }
+
+  .main-content {
+    margin-left: 4.5rem !important;
+  }
+
+
+  .sidenav .nav-link-text {
+    display: none !important;
+  }
+
+
+  .sidenav h6 {
+    display: none !important;
+  }
+
+
+  .sidenav .nav-link {
+    justify-content: center !important;
+    padding: 0.75rem 0.5rem !important;
+  }
+
+  .sidenav .icon {
+    margin: 0 !important;
+  }
+
+
+  .sidenav-header .navbar-brand span {
+    display: none !important;
+  }
+}
+
+
+@media (max-width: 767.98px) {
+  .row-cols-md-2,
+  .row-cols-lg-3 {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+
+
+  .card-body {
+    padding: 1rem !important;
+  }
+
+
+  h1 {
+    font-size: 1.75rem !important;
+  }
+
+  h2 {
+    font-size: 1.5rem !important;
+  }
+
+
+  .table {
+    font-size: 0.85rem;
+  }
+
+
+  .btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .btn-group .btn {
+    width: 100% !important;
+  }
+}
+
+
+@media print {
+
+  .sidenav {
+    display: none !important;
+  }
+
+
+  .main-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+
+
+  .navbar {
+    display: none !important;
+  }
+
+
+  .btn {
+    display: none !important;
+  }
+}
+
+
+@media (prefers-contrast: high) {
+  .card-hover:hover {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  }
+
+  .schedule-time-badge {
+    background: #000;
+    color: #fff;
+  }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .card-hover {
+    transition: none !important;
+  }
+
+  .navbar-toggler-bar {
+    transition: none !important;
+  }
+
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
