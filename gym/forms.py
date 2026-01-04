@@ -1,6 +1,7 @@
 from django import forms
 from django.utils import timezone
 
+from accounts.models import TrainerProfile
 from gym.models import Schedule, Workout
 
 
@@ -72,10 +73,17 @@ class ScheduleSearchForm(forms.Form):
 
 class WorkoutForm(forms.ModelForm):
     """Form for creating/updating workout"""
+    trainer = forms.ModelChoiceField(
+        queryset=TrainerProfile.objects.select_related('user').all(),
+        widget=forms.Select(attrs={"class": "form-control"}),
+        required=True,
+        label="Trainer",
+        help_text="Select the trainer for this workout"
+    )
 
     class Meta:
         model = Workout
-        fields = ["name", "description", "duration_time"]
+        fields = ["name", "description", "duration_time", "trainer"]
         widgets = {
             "name": forms.TextInput(attrs={"class": "form-control"}),
             "description": forms.Textarea(attrs={"class": "form-control", "rows": 4}),
@@ -85,3 +93,17 @@ class WorkoutForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
+
+        if self.user and self.user.role == "trainer":
+            self.fields["trainer"].queryset = TrainerProfile.objects.filter(
+                user=self.user
+            )
+            if hasattr(self.user, "trainer_profile"):
+                self.fields["trainer"].initial = self.user.trainer_profile
+        elif self.user and self.user.role == "admin":
+            self.fields["trainer"].queryset = TrainerProfile.objects.select_related(
+                "user"
+            ).all()
+
+    def label_from_instance(self, obj):
+        return f"{obj.user.get_full_name()} ({obj.specialization.name if obj.specialization else 'No specialization'})"

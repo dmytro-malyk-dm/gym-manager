@@ -82,8 +82,6 @@ class WorkoutCreateView(LoginRequiredMixin, TrainerOrAdminMixin, generic.CreateV
         return kwargs
 
     def form_valid(self, form):
-        if self.request.user.role == "trainer":
-            form.instance.trainer = self.request.user.trainer_profile
         messages.success(self.request, "Workout created successfully!")
         return super().form_valid(form)
 
