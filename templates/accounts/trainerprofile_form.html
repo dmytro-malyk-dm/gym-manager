@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block page_title %}
+  {% if object %}Edit{% else %}Create{% endif %} Trainer
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card shadow-sm">
+      <div class="card-header {% if object %}bg-gradient-warning{% else %}bg-gradient-primary{% endif %}">
+        <h3 class="text-white mb-0">
+          <i class="fas fa-{% if object %}edit{% else %}user-plus{% endif %} me-2"></i>
+          {% if object %}Edit{% else %}Create New{% endif %} Trainer
+        </h3>
+      </div>
+      <div class="card-body">
+        {% if form.non_field_errors %}
+        <div class="alert alert-danger">
+          {{ form.non_field_errors }}
+        </div>
+        {% endif %}
+
+        <form method="post">
+          {% csrf_token %}
+
+          <h5 class="mb-3">Account Information</h5>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="{{ form.username.id_for_label }}" class="form-label">
+                Username <span class="text-danger">*</span>
+              </label>
+              {{ form.username }}
+              {% if form.username.errors %}
+                <div class="text-danger small">{{ form.username.errors }}</div>
+              {% endif %}
+              <small class="text-muted">{{ form.username.help_text }}</small>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="{{ form.email.id_for_label }}" class="form-label">
+                Email <span class="text-danger">*</span>
+              </label>
+              {{ form.email }}
+              {% if form.email.errors %}
+                <div class="text-danger small">{{ form.email.errors }}</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="{{ form.first_name.id_for_label }}" class="form-label">
+                First Name <span class="text-danger">*</span>
+              </label>
+              {{ form.first_name }}
+              {% if form.first_name.errors %}
+                <div class="text-danger small">{{ form.first_name.errors }}</div>
+              {% endif %}
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="{{ form.last_name.id_for_label }}" class="form-label">
+                Last Name <span class="text-danger">*</span>
+              </label>
+              {{ form.last_name }}
+              {% if form.last_name.errors %}
+                <div class="text-danger small">{{ form.last_name.errors }}</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="{{ form.password1.id_for_label }}" class="form-label">
+                Password {% if not object %}<span class="text-danger">*</span>{% endif %}
+              </label>
+              {{ form.password1 }}
+              {% if form.password1.errors %}
+                <div class="text-danger small">{{ form.password1.errors }}</div>
+              {% endif %}
+              <small class="text-muted d-block">{{ form.password1.help_text }}</small>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="{{ form.password2.id_for_label }}" class="form-label">
+                Confirm Password {% if not object %}<span class="text-danger">*</span>{% endif %}
+              </label>
+              {{ form.password2 }}
+              {% if form.password2.errors %}
+                <div class="text-danger small">{{ form.password2.errors }}</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <hr class="my-4">
+
+          <h5 class="mb-3">Trainer Information</h5>
+          <div class="mb-3">
+            <label for="{{ form.specialization.id_for_label }}" class="form-label">
+              Specialization <span class="text-danger">*</span>
+            </label>
+            {{ form.specialization }}
+            {% if form.specialization.errors %}
+              <div class="text-danger small">{{ form.specialization.errors }}</div>
+            {% endif %}
+            <small class="text-muted d-block">{{ form.specialization.help_text }}</small>
+          </div>
+
+          <div class="mb-3">
+            <label for="{{ form.bio.id_for_label }}" class="form-label">
+              Bio
+            </label>
+            {{ form.bio }}
+            {% if form.bio.errors %}
+              <div class="text-danger small">{{ form.bio.errors }}</div>
+            {% endif %}
+            <small class="text-muted d-block">{{ form.bio.help_text }}</small>
+          </div>
+
+          <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-{% if object %}warning{% else %}primary{% endif %} btn-lg">
+              <i class="fas fa-save me-2"></i>
+              {% if object %}Update{% else %}Create{% endif %} Trainer
+            </button>
+            <a href="{% url 'accounts:trainer-list' %}" class="btn btn-secondary btn-lg">
+              <i class="fas fa-times me-2"></i>Cancel
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

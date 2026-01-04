@@ -1,0 +1,98 @@
+/* ============================================
+   SIDEBAR RESPONSIVE STYLES
+   ============================================ */
+
+/* Mobile styles (tablets and phones) */
+@media (max-width: 1199px) {
+  /* Hide sidebar by default on mobile */
+  #sidenav-main {
+    position: fixed;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+    z-index: 1040;
+    width: 250px;
+  }
+
+  /* Show sidebar when toggled */
+  #sidenav-main.show {
+    transform: translateX(0);
+  }
+
+  /* Overlay backdrop when sidebar is open */
+  .sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1030;
+    display: none;
+    transition: opacity 0.3s ease-in-out;
+  }
+
+  .sidebar-overlay.show {
+    display: block;
+    opacity: 1;
+  }
+
+  /* Remove left margin from main content on mobile */
+  .main-content {
+    margin-left: 0 !important;
+  }
+}
+
+/* Desktop styles (large screens) */
+@media (min-width: 1200px) {
+  /* Always show sidebar on desktop */
+  #sidenav-main {
+    transform: translateX(0);
+  }
+
+  /* Add left margin to main content for sidebar space */
+  .main-content {
+    margin-left: 17.125rem;
+  }
+
+  /* Hide overlay on desktop */
+  .sidebar-overlay {
+    display: none !important;
+  }
+
+  /* Hide mobile toggle button on desktop */
+  #sidebarToggle {
+    display: none !important;
+  }
+}
+
+/* ============================================
+   HAMBURGER BUTTON STYLES
+   ============================================ */
+
+#sidebarToggle {
+  background: none;
+  border: none;
+  color: #67748e;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: color 0.3s;
+}
+
+#sidebarToggle:hover {
+  color: #344767;
+}
+
+#sidebarToggle:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Optional: Animate hamburger icon */
+#sidebarToggle i {
+  transition: transform 0.3s;
+}
+
+#sidenav-main.show ~ .main-content #sidebarToggle i {
+  transform: rotate(90deg);
+}

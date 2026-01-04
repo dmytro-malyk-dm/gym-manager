@@ -1,0 +1,50 @@
+<nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur">
+  <div class="container-fluid py-1 px-3">
+    <!-- Hamburger button for mobile  -->
+    <button type="button" class="btn btn-link d-xl-none p-0 me-3" id="sidebarToggle">
+      <i class="fas fa-bars fa-lg"></i>
+    </button>
+
+    <nav aria-label="breadcrumb">
+      <h6 class="font-weight-bolder mb-0">{% block page_title %}{% endblock %}</h6>
+    </nav>
+    <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
+      <div class="ms-md-auto pe-md-3 d-flex align-items-center">
+
+      </div>
+      <ul class="navbar-nav justify-content-end">
+        {% if user.is_authenticated %}
+          <li class="nav-item dropdown d-flex align-items-center">
+            <a href="#" class="nav-link text-body font-weight-bold px-0 dropdown-toggle" id="userDropdown"
+               role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fa fa-user me-sm-1"></i>
+              <span class="d-sm-inline d-none">{{ user.username }}</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+              <li class="dropdown-item disabled">
+                <small class="text-muted">{{ user.get_role_display }}</small>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              {% if user.role == "client" %}
+                <li>
+                  <a class="dropdown-item" href="{% url 'gym:my-bookings' %}">
+                    <i class="fas fa-clipboard-list me-2"></i>My Bookings
+                  </a>
+                </li>
+              {% endif %}
+              <li>
+                <form method="post" action="{% url 'logout' %}" id="logout-form-navbar">
+                  {% csrf_token %}
+                  <a class="dropdown-item text-danger" href="#"
+                     onclick="event.preventDefault(); document.getElementById('logout-form-navbar').submit();">
+                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                  </a>
+                </form>
+              </li>
+            </ul>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
