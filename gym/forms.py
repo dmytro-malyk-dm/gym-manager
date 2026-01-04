@@ -100,6 +100,8 @@ class WorkoutForm(forms.ModelForm):
             )
             if hasattr(self.user, "trainer_profile"):
                 self.fields["trainer"].initial = self.user.trainer_profile
+                self.fields["trainer"].disabled = True
+                self.fields["trainer"].help_text = "You can only create workouts for yourself"
         elif self.user and self.user.role == "admin":
             self.fields["trainer"].queryset = TrainerProfile.objects.select_related(
                 "user"

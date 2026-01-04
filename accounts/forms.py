@@ -3,7 +3,11 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
 
-from accounts.models import ClientProfile, Specialization, TrainerProfile
+from accounts.models import (
+    ClientProfile,
+    Specialization,
+    TrainerProfile
+)
 
 
 User = get_user_model()
@@ -145,6 +149,12 @@ class TrainerCreationForm(UserCreationForm):
         return password2
 
     def save(self, commit=True):
+        """
+        Save trainer user and profile.
+        Handles both creation and update scenarios.
+        Preserves password if not provided during update.
+        """
+
         if self.instance.pk and not self.cleaned_data.get("password1"):
             user = self.instance
             user.email = self.cleaned_data.get("email")
@@ -152,6 +162,7 @@ class TrainerCreationForm(UserCreationForm):
             user.last_name = self.cleaned_data.get("last_name")
         else:
             user = super().save(commit=False)
+
             if not user.pk:
                 user.role = "trainer"
 
