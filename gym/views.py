@@ -73,7 +73,6 @@ class WorkoutCreateView(LoginRequiredMixin, TrainerOrAdminMixin, generic.CreateV
 
     model = Workout
     form_class = WorkoutForm
-    template_name = "gym/workout_form.html"
     success_url = reverse_lazy("gym:workout-list")
 
     def get_form_kwargs(self):
@@ -91,7 +90,6 @@ class WorkoutUpdateView(LoginRequiredMixin, TrainerOrAdminMixin, generic.UpdateV
 
     model = Workout
     form_class = WorkoutForm
-    template_name = "gym/workout_form.html"
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -119,7 +117,6 @@ class WorkoutDeleteView(LoginRequiredMixin, TrainerOrAdminMixin, generic.DeleteV
     """Trainers can delete their own workouts, admins can delete any"""
 
     model = Workout
-    template_name = "gym/workout_confirm_delete.html"
     success_url = reverse_lazy("gym:workout-list")
 
     def test_func(self):
