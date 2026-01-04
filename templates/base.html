@@ -25,8 +25,11 @@
   {% block extra_css %}{% endblock %}
 </head>
 <body class="g-sidenav-show bg-gray-100">
+  <!-- Overlay for mobile sidebar backdrop -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
   {% include "includes/sidebar.html" %}
+
   <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
 
     {% include "includes/navbar.html" %}
@@ -57,5 +60,44 @@
   <script src="https://demos.creative-tim.com/soft-ui-dashboard/assets/js/soft-ui-dashboard.min.js?v=1.0.7"></script>
 
   {% block extra_js %}{% endblock %}
+  <script>
+    // Sidebar toggle functionality for mobile
+    document.addEventListener('DOMContentLoaded', function() {
+      const sidebar = document.getElementById('sidenav-main');
+      const overlay = document.getElementById('sidebarOverlay');
+      const toggleBtn = document.getElementById('sidebarToggle');
+
+      // Toggle sidebar when hamburger button is clicked
+      if (toggleBtn) {
+        toggleBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          sidebar.classList.toggle('show');
+          overlay.classList.toggle('show');
+        });
+      }
+
+      // Close sidebar when clicking on overlay
+      if (overlay) {
+        overlay.addEventListener('click', function() {
+          sidebar.classList.remove('show');
+          overlay.classList.remove('show');
+        });
+      }
+
+      // Close sidebar when clicking on a link (mobile only)
+      if (window.innerWidth < 1200) {
+        const sidebarLinks = sidebar.querySelectorAll('a.nav-link');
+        sidebarLinks.forEach(function(link) {
+          link.addEventListener('click', function() {
+            // Small delay to allow navigation
+            setTimeout(function() {
+              sidebar.classList.remove('show');
+              overlay.classList.remove('show');
+            }, 200);
+          });
+        });
+      }
+    });
+  </script>
 </body>
 </html>
